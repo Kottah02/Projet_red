@@ -17,29 +17,39 @@ const (
 )
 
 type Player struct {
-	Pseudo          string
-	Sex             string
-	Class           string
-	Health          int
-	Wood            int
-	Stone           int
-	Leaf            int
-	SwordCount      int
-	BowCount        int
-	MagicStaffCount int
-	Potions         int // Consommables
+	Class      string
+	Health     int
+	Wood       int
+	Stone      int
+	Leaf       int
+	Sword      bool
+	Bow        bool
+	MagicStaff bool
+	Potions    int // Consommables
 }
 
 func main() {
+	fmt.Println("Bienvenue dans le Monde des Douze, les aventuriers cherchent les Dofus, des œufs de dragons aux pouvoirs immenses.")
+	fmt.Println("Ces artefacts provoquent des conflits entre dieux, dragons et factions.")
+	fmt.Println("La quête des Dofus primordiaux est centrale, influençant le destin du monde et entraînant des combats épiques.")
+	fmt.Println(red + "LE MONDE COMPTE SUR TOI JEUNE AVENTURIER" + reset)
+	reset := "\033[0m"
+	fmt.Println("Appuyez sur Entrée pour continuer..." + reset)
+	fmt.Scanln()
+
+	Debut()
+}
+func Debut() {
 	rand.Seed(time.Now().UnixNano())
 
-	// Choisir pseudo, sexe et classe
-	player := createCharacter()
+	// Choisir une classe
+	player := chooseClass()
 
 	// Boucle principale du jeu
 	for {
+
 		fmt.Println("\n" + cyan + "================================================" + reset)
-		fmt.Printf("   Que voulez-vous faire, %s ?\n", player.Pseudo)
+		fmt.Println("   Que voulez-vous faire ?")
 		fmt.Println("================================================")
 		fmt.Println(yellow + "1" + reset + " - Récolter des ressources")
 		fmt.Println(yellow + "2" + reset + " - Combattre des monstres")
@@ -70,44 +80,10 @@ func main() {
 	}
 }
 
-// Fonction pour créer le personnage (pseudo, sexe, classe)
-func createCharacter() Player {
-	var player Player
-
-	// Choisir le pseudo
+// Fonction pour choisir la classe
+func chooseClass() Player {
 	fmt.Println(cyan + "================================================" + reset)
-	fmt.Println("   Entrez votre pseudo :")
-	fmt.Println(cyan + "================================================" + reset)
-	fmt.Print("Pseudo : ")
-	fmt.Scan(&player.Pseudo)
-
-	// Choisir le sexe
-	fmt.Println(cyan + "\n================================================" + reset)
-	fmt.Println("   Choisissez votre sexe :")
-	fmt.Println(cyan + "================================================" + reset)
-	fmt.Println(yellow + "1" + reset + " - Homme")
-	fmt.Println(yellow + "2" + reset + " - Femme")
-	fmt.Println(cyan + "================================================" + reset)
-
-	var sexChoice int
-	for {
-		fmt.Print("Choix : ")
-		fmt.Scan(&sexChoice)
-		if sexChoice == 1 || sexChoice == 2 {
-			break
-		}
-		fmt.Println(red + "Choix invalide. Veuillez entrer 1 ou 2." + reset)
-	}
-
-	switch sexChoice {
-	case 1:
-		player.Sex = "Homme"
-	case 2:
-		player.Sex = "Femme"
-	}
-
-	// Choisir la classe
-	fmt.Println(cyan + "\n================================================" + reset)
+	fmt.Println("   Bienvenue dans le jeu !")
 	fmt.Println("   Choisissez votre classe :")
 	fmt.Println(cyan + "================================================" + reset)
 	fmt.Println(yellow + "1" + reset + " - Guerrier")
@@ -119,8 +95,7 @@ func createCharacter() Player {
 	fmt.Print("Choix : ")
 	fmt.Scan(&classChoice)
 
-	player.Health = 100
-	player.Potions = 1
+	player := Player{Health: 100, Potions: 3}
 
 	switch classChoice {
 	case 1:
@@ -141,39 +116,33 @@ func createCharacter() Player {
 
 // Fonction pour récolter des ressources
 func gatherResources(player *Player) {
-	for {
-		fmt.Println(cyan + "\n================================================" + reset)
-		fmt.Println("   Que voulez-vous récolter ?")
-		fmt.Println(cyan + "================================================" + reset)
-		fmt.Println(yellow + "1" + reset + " - Bois")
-		fmt.Println(yellow + "2" + reset + " - Pierre")
-		fmt.Println(yellow + "3" + reset + " - Feuilles")
-		fmt.Println(yellow + "0" + reset + " - Retour")
-		fmt.Println(cyan + "================================================" + reset)
+	fmt.Println(cyan + "\n================================================" + reset)
+	fmt.Println("   Que voulez-vous récolter ?")
+	fmt.Println(cyan + "================================================" + reset)
+	fmt.Println(yellow + "1" + reset + " - Bois")
+	fmt.Println(yellow + "2" + reset + " - Pierre")
+	fmt.Println(yellow + "3" + reset + " - Feuilles")
+	fmt.Println(cyan + "================================================" + reset)
 
-		var resourceChoice int
-		fmt.Print("Choix : ")
-		fmt.Scan(&resourceChoice)
+	var resourceChoice int
+	fmt.Print("Choix : ")
+	fmt.Scan(&resourceChoice)
 
-		switch resourceChoice {
-		case 0:
-			// Revenir au menu principal
-			return
-		case 1:
-			wood := rand.Intn(10) + 1
-			player.Wood += wood
-			fmt.Printf(green+"Vous avez récolté %d unités de bois. Total de bois : %d\n"+reset, wood, player.Wood)
-		case 2:
-			stone := rand.Intn(10) + 1
-			player.Stone += stone
-			fmt.Printf(green+"Vous avez récolté %d unités de pierre. Total de pierre : %d\n"+reset, stone, player.Stone)
-		case 3:
-			leaf := rand.Intn(10) + 1
-			player.Leaf += leaf
-			fmt.Printf(green+"Vous avez récolté %d feuilles. Total de feuilles : %d\n"+reset, leaf, player.Leaf)
-		default:
-			fmt.Println(red + "Choix invalide." + reset)
-		}
+	switch resourceChoice {
+	case 1:
+		wood := rand.Intn(10) + 1
+		player.Wood += wood
+		fmt.Printf(green+"Vous avez récolté %d unités de bois. Total de bois : %d\n"+reset, wood, player.Wood)
+	case 2:
+		stone := rand.Intn(10) + 1
+		player.Stone += stone
+		fmt.Printf(green+"Vous avez récolté %d unités de pierre. Total de pierre : %d\n"+reset, stone, player.Stone)
+	case 3:
+		leaf := rand.Intn(10) + 1
+		player.Leaf += leaf
+		fmt.Printf(green+"Vous avez récolté %d feuilles. Total de feuilles : %d\n"+reset, leaf, player.Leaf)
+	default:
+		fmt.Println(red + "Choix invalide." + reset)
 	}
 }
 
@@ -215,55 +184,49 @@ func combat(player *Player) {
 
 // Fonction pour construire des objets
 func craftItems(player *Player) {
-	for {
-		fmt.Println(cyan + "\n================================================" + reset)
-		fmt.Println("   Que voulez-vous fabriquer ?")
-		fmt.Println(cyan + "================================================" + reset)
-		fmt.Println(yellow + "1" + reset + " - Épée (5 bois, 5 pierre)")
-		fmt.Println(yellow + "2" + reset + " - Arc (5 bois, 5 feuilles)")
-		fmt.Println(yellow + "3" + reset + " - Bâton magique (5 bois, 5 feuilles, 5 pierre)")
-		fmt.Println(yellow + "0" + reset + " - Retour")
-		fmt.Println(cyan + "================================================" + reset)
+	fmt.Println(cyan + "\n================================================" + reset)
+	fmt.Println("   Que voulez-vous fabriquer ?")
+	fmt.Println(cyan + "================================================" + reset)
+	fmt.Println(yellow + "1" + reset + " - Épée (5 bois, 5 pierre)")
+	fmt.Println(yellow + "2" + reset + " - Arc (5 bois, 5 feuilles)")
+	fmt.Println(yellow + "3" + reset + " - Bâton magique (5 bois, 5 feuilles, 5 pierre)")
+	fmt.Println(cyan + "================================================" + reset)
 
-		var craftChoice int
-		fmt.Print("Choix : ")
-		fmt.Scan(&craftChoice)
+	var craftChoice int
+	fmt.Print("Choix : ")
+	fmt.Scan(&craftChoice)
 
-		switch craftChoice {
-		case 0:
-			// Revenir au menu principal
-			return
-		case 1:
-			if player.Wood >= 5 && player.Stone >= 5 {
-				player.Wood -= 5
-				player.Stone -= 5
-				player.SwordCount++
-				fmt.Println(green + "Vous avez fabriqué une épée." + reset)
-			} else {
-				fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
-			}
-		case 2:
-			if player.Wood >= 5 && player.Leaf >= 5 {
-				player.Wood -= 5
-				player.Leaf -= 5
-				player.BowCount++
-				fmt.Println(green + "Vous avez fabriqué un arc." + reset)
-			} else {
-				fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
-			}
-		case 3:
-			if player.Wood >= 5 && player.Leaf >= 5 && player.Stone >= 5 {
-				player.Wood -= 5
-				player.Leaf -= 5
-				player.Stone -= 5
-				player.MagicStaffCount++
-				fmt.Println(green + "Vous avez fabriqué un bâton magique." + reset)
-			} else {
-				fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
-			}
-		default:
-			fmt.Println(red + "Choix invalide." + reset)
+	switch craftChoice {
+	case 1:
+		if player.Wood >= 5 && player.Stone >= 5 {
+			player.Wood -= 5
+			player.Stone -= 5
+			player.Sword = true
+			fmt.Println(green + "Vous avez fabriqué une épée." + reset)
+		} else {
+			fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
 		}
+	case 2:
+		if player.Wood >= 5 && player.Leaf >= 5 {
+			player.Wood -= 5
+			player.Leaf -= 5
+			player.Bow = true
+			fmt.Println(green + "Vous avez fabriqué un arc." + reset)
+		} else {
+			fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
+		}
+	case 3:
+		if player.Wood >= 5 && player.Leaf >= 5 && player.Stone >= 5 {
+			player.Wood -= 5
+			player.Leaf -= 5
+			player.Stone -= 5
+			player.MagicStaff = true
+			fmt.Println(green + "Vous avez fabriqué un bâton magique." + reset)
+		} else {
+			fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
+		}
+	default:
+		fmt.Println(red + "Choix invalide." + reset)
 	}
 }
 
@@ -271,21 +234,18 @@ func craftItems(player *Player) {
 func showInventory(player Player) {
 	fmt.Println(cyan + "\n=================== Inventaire ==================" + reset)
 
-	// Information du joueur
-	fmt.Printf("Pseudo : %s | Sexe : %s | Classe : %s\n", player.Pseudo, player.Sex, player.Class)
-
 	// Objets
-	fmt.Println(cyan + "\n[Objets]" + reset)
-	if player.SwordCount > 0 {
-		fmt.Printf(green+"- Épée (%d)\n"+reset, player.SwordCount)
+	fmt.Println(cyan + "[Objets]" + reset)
+	if player.Sword {
+		fmt.Println(green + "- Épée" + reset)
 	}
-	if player.BowCount > 0 {
-		fmt.Printf(green+"- Arc (%d)\n"+reset, player.BowCount)
+	if player.Bow {
+		fmt.Println(green + "- Arc" + reset)
 	}
-	if player.MagicStaffCount > 0 {
-		fmt.Printf(green+"- Bâton magique (%d)\n"+reset, player.MagicStaffCount)
+	if player.MagicStaff {
+		fmt.Println(green + "- Bâton magique" + reset)
 	}
-	if player.SwordCount == 0 && player.BowCount == 0 && player.MagicStaffCount == 0 {
+	if !player.Sword && !player.Bow && !player.MagicStaff {
 		fmt.Println(red + "Aucun objet." + reset)
 	}
 
