@@ -41,11 +41,12 @@ func main() {
 		fmt.Println("\n" + cyan + "================================================" + reset)
 		fmt.Printf("   Que voulez-vous faire, %s ?\n", player.Pseudo)
 		fmt.Println("================================================")
-		fmt.Println(yellow + "1" + reset + " - Récolter des ressources")
-		fmt.Println(yellow + "2" + reset + " - Combattre des monstres")
-		fmt.Println(yellow + "3" + reset + " - Aller à l'établi pour construire des objets")
-		fmt.Println(yellow + "4" + reset + " - Consulter votre inventaire")
-		fmt.Println(yellow + "5" + reset + " - Quitter le jeu")
+		fmt.Println(yellow + "1" + reset + " - Afficher l'Information du personnage")
+		fmt.Println(yellow + "2" + reset + " - Récolter des ressources")
+		fmt.Println(yellow + "3" + reset + " - Combattre des monstres")
+		fmt.Println(yellow + "4" + reset + " - Aller à l'établi pour construire des objets")
+		fmt.Println(yellow + "5" + reset + " - Consulter votre inventaire")
+		fmt.Println(yellow + "6" + reset + " - Quitter le jeu")
 		fmt.Println(cyan + "================================================" + reset)
 
 		var choice int
@@ -54,20 +55,25 @@ func main() {
 
 		switch choice {
 		case 1:
-			gatherResources(&player)
+			DisplayInfo(player)
 		case 2:
-			combat(&player)
+			gatherResources(&player)
 		case 3:
-			craftItems(&player)
+			combat(&player)
 		case 4:
-			showInventory(player)
+			craftItems(&player)
 		case 5:
+			showInventory(player)
+		case 6:
 			fmt.Println(green + "\nMerci d'avoir joué !" + reset)
 			return
 		default:
 			fmt.Println(red + "Choix invalide." + reset)
 		}
 	}
+}
+func DisplayInfo(player Player) {
+	fmt.Printf("Pseudo : %s\nSexe : %s\nClasse : %s\n", player.Pseudo, player.Sex, player.Class)
 }
 
 // Fonction pour créer le personnage (pseudo, sexe, classe)
