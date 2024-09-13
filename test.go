@@ -17,7 +17,6 @@ const (
 )
 
 type Player struct {
-<<<<<<< HEAD
 	Pseudo     string
 	Sex        string
 	Class      string
@@ -33,19 +32,6 @@ type Objet struct {
 	SwordCount      int
 	BowCount        int
 	MagicStaffCount int
-=======
-	Pseudo          string
-	Sex             string
-	Class           string
-	Health          int
-	Wood            int
-	Stone           int
-	Leaf            int
-	SwordCount      int
-	BowCount        int
-	MagicStaffCount int
-	Potions         int // Consommables
->>>>>>> d6afe733b596d117fd193c28c9271dceaccfceb5
 }
 
 func main() {
@@ -157,11 +143,7 @@ func createCharacter() Player {
 	fmt.Scan(&classChoice)
 
 	player.Health = 100
-<<<<<<< HEAD
 	player.Inventaire.Potions = 1
-=======
-	player.Potions = 1
->>>>>>> d6afe733b596d117fd193c28c9271dceaccfceb5
 
 	switch classChoice {
 	case 1:
@@ -202,7 +184,6 @@ func gatherResources(player *Player) {
 			return
 		case 1:
 			wood := rand.Intn(10) + 1
-<<<<<<< HEAD
 			player.Inventaire.Wood += wood
 			fmt.Printf(green+"Vous avez récolté %d unités de bois. Total de bois : %d\n"+reset, wood, player.Inventaire.Wood)
 		case 2:
@@ -213,18 +194,6 @@ func gatherResources(player *Player) {
 			leaf := rand.Intn(10) + 1
 			player.Inventaire.Leaf += leaf
 			fmt.Printf(green+"Vous avez récolté %d feuilles. Total de feuilles : %d\n"+reset, leaf, player.Inventaire.Leaf)
-=======
-			player.Wood += wood
-			fmt.Printf(green+"Vous avez récolté %d unités de bois. Total de bois : %d\n"+reset, wood, player.Wood)
-		case 2:
-			stone := rand.Intn(10) + 1
-			player.Stone += stone
-			fmt.Printf(green+"Vous avez récolté %d unités de pierre. Total de pierre : %d\n"+reset, stone, player.Stone)
-		case 3:
-			leaf := rand.Intn(10) + 1
-			player.Leaf += leaf
-			fmt.Printf(green+"Vous avez récolté %d feuilles. Total de feuilles : %d\n"+reset, leaf, player.Leaf)
->>>>>>> d6afe733b596d117fd193c28c9271dceaccfceb5
 		default:
 			fmt.Println(red + "Choix invalide." + reset)
 		}
@@ -288,51 +257,29 @@ func craftItems(player *Player) {
 			// Revenir au menu principal
 			return
 		case 1:
-<<<<<<< HEAD
 			if player.Inventaire.Wood >= 5 && player.Inventaire.Stone >= 5 {
 				player.Inventaire.Wood -= 5
 				player.Inventaire.Stone -= 5
 				player.Inventaire.SwordCount++
-=======
-			if player.Wood >= 5 && player.Stone >= 5 {
-				player.Wood -= 5
-				player.Stone -= 5
-				player.SwordCount++
->>>>>>> d6afe733b596d117fd193c28c9271dceaccfceb5
 				fmt.Println(green + "Vous avez fabriqué une épée." + reset)
 			} else {
 				fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
 			}
 		case 2:
-<<<<<<< HEAD
 			if player.Inventaire.Wood >= 5 && player.Inventaire.Leaf >= 5 {
 				player.Inventaire.Wood -= 5
 				player.Inventaire.Leaf -= 5
 				player.Inventaire.BowCount++
-=======
-			if player.Wood >= 5 && player.Leaf >= 5 {
-				player.Wood -= 5
-				player.Leaf -= 5
-				player.BowCount++
->>>>>>> d6afe733b596d117fd193c28c9271dceaccfceb5
 				fmt.Println(green + "Vous avez fabriqué un arc." + reset)
 			} else {
 				fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
 			}
 		case 3:
-<<<<<<< HEAD
 			if player.Inventaire.Wood >= 5 && player.Inventaire.Leaf >= 5 && player.Inventaire.Stone >= 5 {
 				player.Inventaire.Wood -= 5
 				player.Inventaire.Leaf -= 5
 				player.Inventaire.Stone -= 5
 				player.Inventaire.MagicStaffCount++
-=======
-			if player.Wood >= 5 && player.Leaf >= 5 && player.Stone >= 5 {
-				player.Wood -= 5
-				player.Leaf -= 5
-				player.Stone -= 5
-				player.MagicStaffCount++
->>>>>>> d6afe733b596d117fd193c28c9271dceaccfceb5
 				fmt.Println(green + "Vous avez fabriqué un bâton magique." + reset)
 			} else {
 				fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
@@ -352,7 +299,6 @@ func showInventory(player Player) {
 
 	// Objets
 	fmt.Println(cyan + "\n[Objets]" + reset)
-<<<<<<< HEAD
 	if player.Inventaire.SwordCount > 0 {
 		fmt.Printf(green+"- Épée (%d)\n"+reset, player.Inventaire.SwordCount)
 	}
@@ -363,18 +309,6 @@ func showInventory(player Player) {
 		fmt.Printf(green+"- Bâton magique (%d)\n"+reset, player.Inventaire.MagicStaffCount)
 	}
 	if player.Inventaire.SwordCount == 0 && player.Inventaire.BowCount == 0 && player.Inventaire.MagicStaffCount == 0 {
-=======
-	if player.SwordCount > 0 {
-		fmt.Printf(green+"- Épée (%d)\n"+reset, player.SwordCount)
-	}
-	if player.BowCount > 0 {
-		fmt.Printf(green+"- Arc (%d)\n"+reset, player.BowCount)
-	}
-	if player.MagicStaffCount > 0 {
-		fmt.Printf(green+"- Bâton magique (%d)\n"+reset, player.MagicStaffCount)
-	}
-	if player.SwordCount == 0 && player.BowCount == 0 && player.MagicStaffCount == 0 {
->>>>>>> d6afe733b596d117fd193c28c9271dceaccfceb5
 		fmt.Println(red + "Aucun objet." + reset)
 	}
 
