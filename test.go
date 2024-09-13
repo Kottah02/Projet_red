@@ -20,6 +20,8 @@ type Player struct {
 	Pseudo     string
 	Sex        string
 	Class      string
+	Level      int
+	HealthMax  int
 	Health     int
 	Inventaire Objet
 }
@@ -79,7 +81,7 @@ func Debut() {
 		case 4:
 			craftItems(&player)
 		case 5:
-			showInventory(player)
+			accessInventory(player)
 		case 6:
 			fmt.Println(green + "\nMerci d'avoir joué !" + reset)
 			return
@@ -90,7 +92,7 @@ func Debut() {
 }
 
 func DisplayInfo(player Player) {
-	fmt.Printf("Pseudo : %s\nSexe : %s\nClasse : %s\n", player.Pseudo, player.Sex, player.Class)
+	fmt.Printf("Pseudo : %s\nSexe : %s\nClasse : %s\nNiveau : %d\nVie actuelle : %d\nVie Max : %d\n", player.Pseudo, player.Sex, player.Class, player.Level, player.Health, player.HealthMax)
 }
 
 // Fonction pour créer le personnage (pseudo, sexe, classe)
@@ -136,25 +138,43 @@ func createCharacter() Player {
 	fmt.Println(yellow + "1" + reset + " - Guerrier")
 	fmt.Println(yellow + "2" + reset + " - Archer")
 	fmt.Println(yellow + "3" + reset + " - Mage")
+	fmt.Println(yellow + "4" + reset + " - Elfe")
 	fmt.Println(cyan + "================================================" + reset)
 
 	var classChoice int
 	fmt.Print("Choix : ")
 	fmt.Scan(&classChoice)
 
-	player.Health = 100
-	player.Inventaire.Potions = 1
-
 	switch classChoice {
 	case 1:
 		player.Class = "Guerrier"
 		fmt.Println(green + "Vous avez choisi : Guerrier" + reset)
+		player.HealthMax = 200
+		player.Health = 200
+		player.Inventaire.Potions = 3
+		player.Level = 1
 	case 2:
 		player.Class = "Archer"
 		fmt.Println(green + "Vous avez choisi : Archer" + reset)
+		player.HealthMax = 100
+		player.Health = 100
+		player.Inventaire.Potions = 3
+		player.Level = 1
+
 	case 3:
 		player.Class = "Mage"
 		fmt.Println(green + "Vous avez choisi : Mage" + reset)
+		player.HealthMax = 250
+		player.Health = 250
+		player.Inventaire.Potions = 3
+		player.Level = 1
+	case 4:
+		player.Class = "Elfe"
+		fmt.Println(green + "Vous avez choisi : Elfe" + reset)
+		player.HealthMax = 100
+		player.Health = 40
+		player.Inventaire.Potions = 3
+		player.Level = 1
 	default:
 		fmt.Println(red + "Choix invalide, vous serez un Guerrier par défaut." + reset)
 		player.Class = "Guerrier"
@@ -291,11 +311,11 @@ func craftItems(player *Player) {
 }
 
 // Fonction pour afficher l'inventaire
-func showInventory(player Player) {
+func accessInventory(player Player) {
 	fmt.Println(cyan + "\n=================== Inventaire ==================" + reset)
 
 	// Information du joueur
-	fmt.Printf("Pseudo : %s | Sexe : %s | Classe : %s\n", player.Pseudo, player.Sex, player.Class)
+	fmt.Printf("Pseudo : %s | Sexe : %s | Classe : %s Vie Max : %d | Vie Actuelle : %d | Niveau : %d\n ", player.Pseudo, player.Sex, player.Class, player.HealthMax, player.Health, player.Level)
 
 	// Objets
 	fmt.Println(cyan + "\n[Objets]" + reset)
