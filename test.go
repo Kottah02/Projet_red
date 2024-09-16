@@ -81,7 +81,7 @@ func Debut() {
 		case 4:
 			craftItems(&player)
 		case 5:
-			accessInventory(player)
+			accessInventory(&player)
 		case 6:
 			fmt.Println(green + "\nMerci d'avoir joué !" + reset)
 			return
@@ -310,8 +310,30 @@ func craftItems(player *Player) {
 	}
 }
 
+func takePot(player *Player) {
+	if player.Health == player.HealthMax {
+		fmt.Println(yellow + "Votre vie est déjà au maximum !" + reset)
+		return
+	}
+
+	if player.Inventaire.Potions > 0 {
+		healAmount := 50
+		actualHeal := player.HealthMax - player.Health
+		if healAmount > actualHeal {
+			healAmount = actualHeal
+		}
+		player.Health += healAmount
+		player.Inventaire.Potions--
+		fmt.Printf(green+"Vous avez utilisé une potion et regagnez %d points de vie.\n"+reset, healAmount)
+		fmt.Printf("Votre vie actuelle est de %d / %d\n", player.Health, player.HealthMax)
+	} else {
+		fmt.Println(red + "Vous n'avez plus de potions !" + reset)
+	}
+}
+
 // Fonction pour afficher l'inventaire
-func accessInventory(player Player) {
+
+func accessInventory(player *Player) {
 	fmt.Println(cyan + "\n=================== Inventaire ==================" + reset)
 
 	// Information du joueur
@@ -341,4 +363,24 @@ func accessInventory(player Player) {
 	// Consommables
 	fmt.Println(cyan + "\n[Consommables]" + reset)
 	fmt.Printf("- Potions : %d\n", player.Inventaire.Potions)
+
+	fmt.Println("\n" + cyan + "================================================" + reset)
+	fmt.Println("   Que voulez-vous faire ?")
+	fmt.Println("================================================")
+	fmt.Println(yellow + "1" + reset + " - Prendre une potion")
+	fmt.Println(yellow + "0" + reset + " - Retour")
+
+	var choice int
+	fmt.Print("Choix : ")
+	fmt.Scan(&choice)
+
+	switch choice {
+	case 1:
+		takePot(player)
+	case 0:
+		return
+	default:
+		fmt.Println(red + "Choix invalide." + reset)
+
+	}
 }
