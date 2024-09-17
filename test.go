@@ -20,8 +20,11 @@ type Player struct {
 	Pseudo     string
 	Sex        string
 	Class      string
+	Level      int
+	HealthMax  int
 	Health     int
 	Inventaire Objet
+	Gold       int
 }
 
 type Objet struct {
@@ -79,7 +82,7 @@ func Debut() {
 		case 4:
 			craftItems(&player)
 		case 5:
-			showInventory(player)
+			accessInventory(&player)
 		case 6:
 			fmt.Println(green + "\nMerci d'avoir joué !" + reset)
 			return
@@ -90,7 +93,7 @@ func Debut() {
 }
 
 func DisplayInfo(player Player) {
-	fmt.Printf("Pseudo : %s\nSexe : %s\nClasse : %s\n", player.Pseudo, player.Sex, player.Class)
+	fmt.Printf("Pseudo : %s\nSexe : %s\nClasse : %s\nNiveau : %d\nVie actuelle : %d\nVie Max : %d\nArgent : %d pièces d'or\n", player.Pseudo, player.Sex, player.Class, player.Level, player.Health, player.HealthMax, player.Gold)
 }
 
 // Fonction pour créer le personnage (pseudo, sexe, classe)
@@ -136,25 +139,47 @@ func createCharacter() Player {
 	fmt.Println(yellow + "1" + reset + " - Guerrier")
 	fmt.Println(yellow + "2" + reset + " - Archer")
 	fmt.Println(yellow + "3" + reset + " - Mage")
+	fmt.Println(yellow + "4" + reset + " - Elfe")
 	fmt.Println(cyan + "================================================" + reset)
 
 	var classChoice int
 	fmt.Print("Choix : ")
 	fmt.Scan(&classChoice)
 
-	player.Health = 100
-	player.Inventaire.Potions = 1
-
 	switch classChoice {
 	case 1:
 		player.Class = "Guerrier"
 		fmt.Println(green + "Vous avez choisi : Guerrier" + reset)
+		player.HealthMax = 200
+		player.Health = 200
+		player.Inventaire.Potions = 3
+		player.Level = 1
+		player.Gold = 100
 	case 2:
 		player.Class = "Archer"
 		fmt.Println(green + "Vous avez choisi : Archer" + reset)
+		player.HealthMax = 100
+		player.Health = 100
+		player.Inventaire.Potions = 3
+		player.Level = 1
+		player.Gold = 100
+
 	case 3:
 		player.Class = "Mage"
 		fmt.Println(green + "Vous avez choisi : Mage" + reset)
+		player.HealthMax = 250
+		player.Health = 250
+		player.Inventaire.Potions = 3
+		player.Level = 1
+		player.Gold = 100
+	case 4:
+		player.Class = "Elfe"
+		fmt.Println(green + "Vous avez choisi : Elfe" + reset)
+		player.HealthMax = 100
+		player.Health = 40
+		player.Inventaire.Potions = 3
+		player.Level = 1
+		player.Gold = 100
 	default:
 		fmt.Println(red + "Choix invalide, vous serez un Guerrier par défaut." + reset)
 		player.Class = "Guerrier"
@@ -290,12 +315,34 @@ func craftItems(player *Player) {
 	}
 }
 
+func takePot(player *Player) {
+	if player.Health == player.HealthMax {
+		fmt.Println(yellow + "Votre vie est déjà au maximum !" + reset)
+		return
+	}
+
+	if player.Inventaire.Potions > 0 {
+		healAmount := 50
+		actualHeal := player.HealthMax - player.Health
+		if healAmount > actualHeal {
+			healAmount = actualHeal
+		}
+		player.Health += healAmount
+		player.Inventaire.Potions--
+		fmt.Printf(green+"Vous avez utilisé une potion et regagnez %d points de vie.\n"+reset, healAmount)
+		fmt.Printf("Votre vie actuelle est de %d / %d\n", player.Health, player.HealthMax)
+	} else {
+		fmt.Println(red + "Vous n'avez plus de potions !" + reset)
+	}
+}
+
 // Fonction pour afficher l'inventaire
-func showInventory(player Player) {
+
+func accessInventory(player *Player) {
 	fmt.Println(cyan + "\n=================== Inventaire ==================" + reset)
 
 	// Information du joueur
-	fmt.Printf("Pseudo : %s | Sexe : %s | Classe : %s\n", player.Pseudo, player.Sex, player.Class)
+	fmt.Printf("Pseudo : %s | Sexe : %s | Classe : %s Vie Max : %d | Vie Actuelle : %d | Niveau : %d\n ", player.Pseudo, player.Sex, player.Class, player.HealthMax, player.Health, player.Level)
 
 	// Objets
 	fmt.Println(cyan + "\n[Objets]" + reset)
@@ -321,4 +368,24 @@ func showInventory(player Player) {
 	// Consommables
 	fmt.Println(cyan + "\n[Consommables]" + reset)
 	fmt.Printf("- Potions : %d\n", player.Inventaire.Potions)
+
+	fmt.Println("\n" + cyan + "================================================" + reset)
+	fmt.Println("   Que voulez-vous faire ?")
+	fmt.Println("================================================")
+	fmt.Println(yellow + "1" + reset + " - Prendre une potion")
+	fmt.Println(yellow + "0" + reset + " - Retour")
+
+	var choice int
+	fmt.Print("Choix : ")
+	fmt.Scan(&choice)
+
+	switch choice {
+	case 1:
+		takePot(player)
+	case 0:
+		return
+	default:
+		fmt.Println(red + "Choix invalide." + reset)
+
+	}
 }
