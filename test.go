@@ -16,6 +16,14 @@ const (
 	cyan   = "\033[36m"
 )
 
+type Equipement struct {
+	ChapeauCount int
+	TuniqueCount int
+	BottesCount  int
+	Head         string
+	Chest        string
+	Feet         string
+}
 type Player struct {
 	Pseudo     string
 	Sex        string
@@ -24,6 +32,7 @@ type Player struct {
 	HealthMax  int
 	Health     int
 	Inventaire Objet
+	Equipement Equipement
 	Gold       int
 }
 
@@ -35,6 +44,14 @@ type Objet struct {
 	SwordCount      int
 	BowCount        int
 	MagicStaffCount int
+}
+
+func DisplayInfo(player Player) {
+	fmt.Printf("Pseudo : %s\nSexe : %s\nClasse : %s\nNiveau : %d\nVie actuelle : %d\nVie Max : %d\nArgent : %d pièces d'or\n", player.Pseudo, player.Sex, player.Class, player.Level, player.Health, player.HealthMax, player.Gold)
+	fmt.Println("Équipements :")
+	fmt.Printf(" - Tête : %s\n", player.Equipement.Head)
+	fmt.Printf(" - Torse : %s\n", player.Equipement.Chest)
+	fmt.Printf(" - Pieds : %s\n", player.Equipement.Feet)
 }
 
 func main() {
@@ -65,7 +82,8 @@ func Debut() {
 		fmt.Println(yellow + "3" + reset + " - Combattre des monstres")
 		fmt.Println(yellow + "4" + reset + " - Aller à l'établi pour construire des objets")
 		fmt.Println(yellow + "5" + reset + " - Consulter votre inventaire")
-		fmt.Println(yellow + "6" + reset + " - Quitter le jeu")
+		fmt.Println(yellow + "6" + reset + " - Forgeron")
+		fmt.Println(yellow + "7" + reset + " - Quitter le jeu")
 		fmt.Println(cyan + "================================================" + reset)
 
 		var choice int
@@ -84,6 +102,8 @@ func Debut() {
 		case 5:
 			accessInventory(&player)
 		case 6:
+			blacksmith(&player) // Appeler la fonction du forgeron
+		case 7:
 			fmt.Println(green + "\nMerci d'avoir joué !" + reset)
 			return
 		default:
@@ -260,6 +280,87 @@ func combat(player *Player) {
 		fmt.Println(green + "Vous avez trouvé une potion !" + reset)
 	}
 }
+func blacksmith(player *Player) {
+	fmt.Println(cyan + "\n================================================" + reset)
+	fmt.Println("   Bienvenue chez le marchand ! Que voulez-vous acheter ?")
+	fmt.Println(cyan + "================================================" + reset)
+	fmt.Println(yellow + "1" + reset + " - Potion de vie (3 pièces d'or)")
+	fmt.Println(yellow + "2" + reset + " - Potion de poison (6 pièces d'or)")
+	fmt.Println(yellow + "3" + reset + " - Livre de Sort : Boule de feu (25 pièces d'or)")
+	fmt.Println(yellow + "4" + reset + " - Fourrure de Loup (4 pièces d'or)")
+	fmt.Println(yellow + "5" + reset + " - Peau de Troll (7 pièces d'or)")
+	fmt.Println(yellow + "6" + reset + " - Cuir de Sanglier (3 pièces d'or)")
+	fmt.Println(yellow + "7" + reset + " - Plume de Corbeau (1 pièce d'or)")
+	fmt.Println(yellow + "0" + reset + " - Retour")
+	fmt.Println(cyan + "================================================" + reset)
+
+	var choice int
+	fmt.Print("Choix : ")
+	fmt.Scan(&choice)
+
+	switch choice {
+	case 0:
+		return
+	case 1:
+		if player.Gold >= 3 {
+			player.Gold -= 3
+			player.Inventaire.Potions++
+			fmt.Println(green + "Vous avez acheté une Potion de vie." + reset)
+		} else {
+			fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
+		}
+	case 2:
+		if player.Gold >= 6 {
+			player.Gold -= 6
+			// Ajouter la Potion de poison à l'inventaire (selon votre implémentation)
+			fmt.Println(green + "Vous avez acheté une Potion de poison." + reset)
+		} else {
+			fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
+		}
+	case 3:
+		if player.Gold >= 25 {
+			player.Gold -= 25
+			// Ajouter le Livre de Sort : Boule de feu à l'inventaire
+			fmt.Println(green + "Vous avez acheté le Livre de Sort : Boule de feu." + reset)
+		} else {
+			fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
+		}
+	case 4:
+		if player.Gold >= 4 {
+			player.Gold -= 4
+			// Ajouter Fourrure de Loup à l'inventaire
+			fmt.Println(green + "Vous avez acheté une Fourrure de Loup." + reset)
+		} else {
+			fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
+		}
+	case 5:
+		if player.Gold >= 7 {
+			player.Gold -= 7
+			// Ajouter Peau de Troll à l'inventaire
+			fmt.Println(green + "Vous avez acheté une Peau de Troll." + reset)
+		} else {
+			fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
+		}
+	case 6:
+		if player.Gold >= 3 {
+			player.Gold -= 3
+			// Ajouter Cuir de Sanglier à l'inventaire
+			fmt.Println(green + "Vous avez acheté un Cuir de Sanglier." + reset)
+		} else {
+			fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
+		}
+	case 7:
+		if player.Gold >= 1 {
+			player.Gold -= 1
+			// Ajouter Plume de Corbeau à l'inventaire
+			fmt.Println(green + "Vous avez acheté une Plume de Corbeau." + reset)
+		} else {
+			fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
+		}
+	default:
+		fmt.Println(red + "Choix invalide." + reset)
+	}
+}
 
 // Fonction pour construire des objets
 func craftItems(player *Player) {
@@ -388,4 +489,53 @@ func accessInventory(player *Player) {
 		fmt.Println(red + "Choix invalide." + reset)
 
 	}
+}
+
+func equipItem(player *Player) {
+	fmt.Println(cyan + "\n================================================" + reset)
+	fmt.Println("   Quel équipement voulez-vous changer ?")
+	fmt.Println(cyan + "================================================" + reset)
+	fmt.Println(yellow + "1" + reset + " - Tête")
+	fmt.Println(yellow + "2" + reset + " - Torse")
+	fmt.Println(yellow + "3" + reset + " - Pieds")
+	fmt.Println(yellow + "0" + reset + " - Retour")
+	fmt.Println(cyan + "================================================" + reset)
+
+	var choice int
+	fmt.Print("Choix : ")
+	fmt.Scan(&choice)
+
+	switch choice {
+	case 1:
+		fmt.Print("Entrez le nom de l'équipement pour la tête : ")
+		fmt.Scan(&player.Equipement.Head)
+		fmt.Println(green + "Équipement pour la tête changé." + reset)
+	case 2:
+		fmt.Print("Entrez le nom de l'équipement pour le torse : ")
+		fmt.Scan(&player.Equipement.Chest)
+		fmt.Println(green + "Équipement pour le torse changé." + reset)
+	case 3:
+		fmt.Print("Entrez le nom de l'équipement pour les pieds : ")
+		fmt.Scan(&player.Equipement.Feet)
+		fmt.Println(green + "Équipement pour les pieds changé." + reset)
+	case 0:
+		return
+	default:
+		fmt.Println(red + "Choix invalide." + reset)
+	}
+}
+
+func createCharacter() Player {
+	var player Player
+
+	// ... autres choix du personnage
+
+	// Initialiser l'équipement avec des valeurs par défaut
+	player.Equipement = Equipment{
+		Head:  "Aucun",
+		Chest: "Aucun",
+		Feet:  "Aucun",
+	}
+
+	return player
 }
