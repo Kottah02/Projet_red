@@ -26,6 +26,8 @@ type Player struct {
 	Inventaire Objet
 	Skills     []string
 	Gold       int
+	Equip      Equipment
+	Attack     int
 }
 
 type Objet struct {
@@ -45,6 +47,12 @@ type Objet struct {
 	ChapAven       int
 	TunAven        int
 	BotteAven      int
+}
+
+type Equipment struct {
+	Head  string
+	Torso string
+	Feet  string
 }
 
 func main() {
@@ -168,6 +176,7 @@ func createCharacter() Player {
 		player.Inventaire.Potions = 3
 		player.Level = 1
 		player.Gold = 100
+		player.Attack = 10
 	case 2:
 		player.Class = "Archer"
 		fmt.Println(green + "Vous avez choisi : Archer" + reset)
@@ -176,15 +185,17 @@ func createCharacter() Player {
 		player.Inventaire.Potions = 3
 		player.Level = 1
 		player.Gold = 100
+		player.Attack = 30
 
 	case 3:
 		player.Class = "Mage"
 		fmt.Println(green + "Vous avez choisi : Mage" + reset)
-		player.HealthMax = 250
+		player.HealthMax = 150
 		player.Health = 250
 		player.Inventaire.Potions = 3
 		player.Level = 1
 		player.Gold = 100
+		player.Attack = 20
 	case 4:
 		player.Class = "Elfe"
 		fmt.Println(green + "Vous avez choisi : Elfe" + reset)
@@ -193,6 +204,7 @@ func createCharacter() Player {
 		player.Inventaire.Potions = 3
 		player.Level = 1
 		player.Gold = 100
+		player.Attack = 10
 	default:
 		fmt.Println(red + "Choix invalide, vous serez un Guerrier par défaut." + reset)
 		player.Class = "Guerrier"
@@ -264,38 +276,65 @@ func gatherResources(player *Player) {
 
 // Fonction pour combattre des monstres
 func combat(player *Player) {
+	c := 0
 	monsterHealth := rand.Intn(50) + 50
-	fmt.Printf(cyan + "\n================================================\n" + reset)
-	fmt.Printf("   Vous combattez un monstre avec %d points de vie !\n", monsterHealth)
-	fmt.Println(cyan + "================================================" + reset)
-
-	for monsterHealth > 0 && player.Health > 0 {
+	for monsterHealth > 0 || player.Health > 0 {
 		// Attaque du joueur
-		damage := rand.Intn(20) + 10
-		monsterHealth -= damage
-		fmt.Printf(green+"Vous attaquez et infligez %d de dégâts. Vie du monstre restante : %d\n"+reset, damage, monsterHealth)
+		fmt.Printf(cyan + "\n================================================\n" + reset)
+		fmt.Printf("   Vous allez se combattre avec %d de points de vie\n", player.Health)
+		fmt.Println(cyan + "================================================" + reset)
 
-		if monsterHealth <= 0 {
-			fmt.Println(green + "Vous avez vaincu le monstre !" + reset)
-			break
+		fmt.Println("Veux-tu prendre une potion avant d'aller au combat" + reset)
+		fmt.Printf(yellow + "1" + reset + " - Prendre une potion\n")
+		fmt.Printf(yellow + "2" + reset + " - Affronter un monstre\n")
+		fmt.Println(yellow + "0" + reset + " - Retour")
+
+		var choice int
+		fmt.Print("Choix : ")
+		fmt.Scan(&choice)
+		fmt.Println(cyan + "================================================" + reset)
+		switch choice {
+		case 1:
+			takePot(player)
+		case 2:
+			if monsterHealth > 0 {
+				c += 1
+				fmt.Printf("Tour : %d\n", c)
+				damage := player.Attack
+				monsterHealth -= damage
+				fmt.Printf(cyan + "\n===================================================\n" + reset)
+				fmt.Printf("   Vous allez se combattre avec %d de points de vie\n", player.Health)
+				fmt.Println(cyan + "===================================================" + reset)
+				fmt.Printf(green+"Vous attaquez et infligez %d de dégâts. Vie du monstre restante : %d\n"+reset, damage, monsterHealth)
+
+				// Attaque du monstre
+				if monsterHealth > 0 {
+					monsterDamage := rand.Intn(15) + 5
+					player.Health -= monsterDamage
+					fmt.Printf(red+"Le monstre vous attaque et inflige %d de dégâts.\n"+reset, monsterDamage)
+				} else {
+					fmt.Println(green + "Le monstre est vaincu !")
+					fmt.Printf("Il vous reste %d de points de vie\n", player.Health)
+				}
+				if player.Health < 0 {
+					fmt.Println(red + "Vous êtes mort...\n" + reset)
+					player.Health = player.HealthMax / 2
+					fmt.Printf(green+"Vous avez été ressuscité avec %d points de vie.\n"+reset, player.Health)
+					// Le joueur peut trouver une potion après le combat
+				}
+				if rand.Float32() < 0.3 { // 30% de chance de trouver une potion
+					player.Inventaire.Potions++
+					fmt.Println(green + "Vous avez trouvé une potion !\n" + reset)
+
+				}
+			} else {
+				fmt.Println(green + "Il n'y a plus de monstre.\n" + reset)
+			}
+		case 0:
+			return
+		default:
+			fmt.Println(red + "Choix invalide." + reset)
 		}
-
-		// Attaque du monstre
-		monsterDamage := rand.Intn(15) + 5
-		player.Health -= monsterDamage
-		fmt.Printf(red+"Le monstre vous attaque et inflige %d de dégâts. Votre vie restante : %d\n"+reset, monsterDamage, player.Health)
-
-		if player.Health <= 0 {
-			fmt.Println(red + "Vous êtes mort..." + reset)
-			player.Health = player.HealthMax / 2
-			fmt.Printf(green+"Vous avez été ressuscité avec %d points de vie.\n"+reset, player.Health)
-		}
-	}
-
-	// Le joueur peut trouver une potion après le combat
-	if rand.Float32() < 0.3 { // 30% de chance de trouver une potion
-		player.Inventaire.Potions++
-		fmt.Println(green + "Vous avez trouvé une potion !" + reset)
 	}
 }
 
@@ -308,9 +347,9 @@ func craftItems(player *Player) {
 		fmt.Println(yellow + "1" + reset + " - Épée (5 bois, 5 pierre)")
 		fmt.Println(yellow + "2" + reset + " - Arc (5 bois, 5 feuilles)")
 		fmt.Println(yellow + "3" + reset + " - Bâton magique (5 bois, 5 feuilles, 5 pierre)")
-		fmt.Println(yellow + "4" + reset + " - Chapeau de l'aventurier")
-		fmt.Println(yellow + "5" + reset + " - Tunique de l'aventurier")
-		fmt.Println(yellow + "6" + reset + " - Bottes de l'aventurier")
+		fmt.Println(yellow + "4" + reset + " - Chapeau de l'aventurier (1 Plume de Corbeau, 1 Cuir de Sanglier)")
+		fmt.Println(yellow + "5" + reset + " - Tunique de l'aventurier (2 Fourrures de Loup, 1 Peau de troll)")
+		fmt.Println(yellow + "6" + reset + " - Bottes de l'aventurier (1 Fourrure de Loup, 1 Cuir de Sanglier)")
 		fmt.Println(yellow + "0" + reset + " - Retour")
 		fmt.Println(cyan + "================================================" + reset)
 
@@ -417,9 +456,18 @@ func accessInventory(player *Player) {
 	fmt.Println(cyan + "\n=================== Inventaire ==================" + reset)
 
 	// Information du joueur
-	fmt.Printf("Pseudo : %s | Sexe : %s | Classe : %s Vie Max : %d | Vie Actuelle : %d | Niveau : %d\n ", player.Pseudo, player.Sex, player.Class, player.HealthMax, player.Health, player.Level)
+	fmt.Printf("Pseudo : %s | Sexe : %s | Classe : %s Vie Max : %d | Vie Actuelle : %d | Niveau : %d | Pièces d'or : %d\n ", player.Pseudo, player.Sex, player.Class, player.HealthMax, player.Health, player.Level, player.Gold)
 
 	// Objets
+	fmt.Println(cyan + "\n[Equipement]" + reset)
+
+	if player.Inventaire.Bow > 0 {
+		fmt.Printf(green+"- Arc (%d)\n"+reset, player.Inventaire.Bow)
+	}
+	if player.Inventaire.MagicStaff > 0 {
+		fmt.Printf(green+"- Bâton magique (%d)\n"+reset, player.Inventaire.MagicStaff)
+	}
+
 	fmt.Println(cyan + "\n[Objets]" + reset)
 	if player.Inventaire.Sword > 0 {
 		fmt.Printf(green+"- Épée (%d)\n"+reset, player.Inventaire.Sword)
@@ -478,7 +526,7 @@ func accessInventory(player *Player) {
 	case 2:
 		if player.Inventaire.SpellBookCount > 0 {
 			spellBook(player)
-			player.Inventaire.SpellBookCount-- // Le livre est consommé
+			player.Inventaire.SpellBookCount--
 		} else {
 			fmt.Println(red + "Vous n'avez pas de Livre de compétence : Boule de Feu." + reset)
 		}
@@ -602,13 +650,6 @@ func addInventory(player *Player, item string, quantity int) {
 		player.Inventaire.Bow += quantity
 	case "magicstaff":
 		player.Inventaire.MagicStaff += quantity
-	}
-}
-
-// Tâche 8
-func dead(player *Player) {
-	if player.Health == 0 {
-		fmt.Println("Votre personnage est mort")
 	}
 }
 
