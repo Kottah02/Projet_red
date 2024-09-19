@@ -26,8 +26,12 @@ type Player struct {
 	Inventaire Objet
 	Skills     []string
 	Gold       int
+<<<<<<< HEAD
 	Equip      Equipment
 	Attack     int
+=======
+	equip      Equipment
+>>>>>>> 46e895dbba3ff89204ff8c1de9bf916d6a499d63
 }
 
 type Objet struct {
@@ -46,7 +50,17 @@ type Objet struct {
 	PlumeCorbeau   int
 	ChapAven       int
 	TunAven        int
-	BotteAven      int
+}
+
+type Equipment struct {
+	head     stuff
+	plastron stuff
+	feet     stuff
+}
+
+type stuff struct {
+	name string
+	pvb  int
 }
 
 type Equipment struct {
@@ -212,6 +226,10 @@ func createCharacter() Player {
 
 	player.Skills = append(player.Skills, "Coup de poing")
 	fmt.Println(green + "Vous avez appris une nouvelle compétence : Coup de poing" + reset)
+
+	player.equip.head = stuff{name: "Chapeau de l'aventurier", pvb: 0}
+	player.equip.plastron = stuff{name: "Plastron de l'aventurier", pvb: 0}
+	player.equip.feet = stuff{name: "Botte de l'aventurier", pvb: 0}
 	return player
 }
 
@@ -397,7 +415,8 @@ func craftItems(player *Player) {
 				player.Gold -= 5
 				player.Inventaire.PlumeCorbeau -= 1
 				player.Inventaire.CuirSanglier -= 1
-				player.Inventaire.ChapAven++
+				player.equip.head = stuff{"Chapeau de kheir", 10}
+				player.HealthMax += player.equip.head.pvb
 				fmt.Println(green + "Vous avez fabriqué un Chapeau de l'aventurier." + reset)
 			} else {
 				fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
@@ -407,7 +426,8 @@ func craftItems(player *Player) {
 				player.Gold -= 5
 				player.Inventaire.Fourrure -= 2
 				player.Inventaire.Peau_Troll -= 1
-				player.Inventaire.TunAven++
+				player.equip.head = stuff{"Plastron de kheir", 10}
+				player.HealthMax += player.equip.plastron.pvb
 				fmt.Println(green + "Vous avez fabriqué un Tunique de l'aventurier." + reset)
 			} else {
 				fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
@@ -417,7 +437,8 @@ func craftItems(player *Player) {
 				player.Gold -= 5
 				player.Inventaire.Fourrure -= 1
 				player.Inventaire.CuirSanglier -= 1
-				player.Inventaire.BotteAven++
+				player.equip.head = stuff{"Botte de kheir", 10}
+				player.HealthMax += player.equip.feet.pvb
 				fmt.Println(green + "Vous avez fabriqué une paire de bottes l'aventurier." + reset)
 			} else {
 				fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
@@ -487,11 +508,7 @@ func accessInventory(player *Player) {
 	if player.Inventaire.TunAven > 0 {
 		fmt.Printf(green+"- Tunique de l'aventurier (%d)\n"+reset, player.Inventaire.TunAven)
 	}
-	if player.Inventaire.BotteAven > 0 {
-		fmt.Printf(green+"- Bottes de l'aventurier (%d)\n"+reset, player.Inventaire.BotteAven)
-
-	}
-	if player.Inventaire.Sword == 0 && player.Inventaire.Bow == 0 && player.Inventaire.MagicStaff == 0 && player.Inventaire.Potion_Poison == 0 && player.Inventaire.ChapAven == 0 && player.Inventaire.TunAven == 0 && player.Inventaire.BotteAven == 0 {
+	if player.Inventaire.Sword == 0 && player.Inventaire.Bow == 0 && player.Inventaire.MagicStaff == 0 && player.Inventaire.Potion_Poison == 0 && player.Inventaire.ChapAven == 0 && player.Inventaire.TunAven == 0 {
 		fmt.Println(red + "Aucun arme." + reset)
 	}
 	fmt.Println(cyan + "\n[Compétences]" + reset)
