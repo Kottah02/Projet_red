@@ -3,7 +3,6 @@ package combat
 import (
 	"fmt"
 	"math/rand"
-	ennemie "projetred/Monstre"
 	"projetred/personnage"
 )
 
@@ -19,7 +18,6 @@ const (
 // Fonction pour combattre des monstres
 func Combat(player *personnage.Player) {
 	c := 0
-	gobelin := ennemie.InitGoblin()
 	monsterHealth := rand.Intn(50) + 50
 	for monsterHealth > 0 || player.Health > 0 {
 		// Attaque du joueur
@@ -30,7 +28,7 @@ func Combat(player *personnage.Player) {
 		fmt.Println("Veux-tu prendre une potion avant d'aller au combat" + reset)
 		fmt.Printf(yellow + "1" + reset + " - Prendre une potion\n")
 		fmt.Printf(yellow + "2" + reset + " - Affronter un monstre\n")
-		fmt.Printf(yellow + "3" + reset + " - ENtrainement\n")
+
 		fmt.Println(yellow + "0" + reset + " - Retour")
 
 		var choice int
@@ -74,8 +72,7 @@ func Combat(player *personnage.Player) {
 			} else {
 				fmt.Println(green + "Il n'y a plus de monstre.\n" + reset)
 			}
-		case 3:
-			EntrainementGobelin(gobelin, player)
+
 		case 0:
 			return
 		default:

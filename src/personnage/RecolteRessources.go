@@ -25,39 +25,74 @@ func GatherResources(player *Player) {
 		fmt.Print("Choix : ")
 		fmt.Scan(&resourceChoice)
 
+		// Calculer le total d'objets dans l'inventaire
+		totalItems := player.Inventaire.Wood + player.Inventaire.Stone + player.Inventaire.Leaf +
+			player.Inventaire.Fourrure + player.Inventaire.Peau_Troll + player.Inventaire.CuirSanglier +
+			player.Inventaire.PlumeCorbeau + player.Inventaire.Potions + player.Inventaire.Sword +
+			player.Inventaire.Bow + player.Inventaire.MagicStaff
+
+		// Si le total dépasse 50, on empêche de récolter plus de ressources
+		if totalItems >= 50 {
+			fmt.Println(red + "Inventaire plein. Vous ne pouvez plus récolter d'autres ressources." + reset)
+			return
+		}
+
+		// Calculer l'espace restant
+		spaceRemaining := 50 - totalItems
+
 		switch resourceChoice {
 		case 0:
 			// Revenir au menu principal
 			return
 		case 1:
 			wood := rand.Intn(10) + 1
+			if wood > spaceRemaining {
+				wood = spaceRemaining // Ajuster la quantité à récolter
+			}
 			player.Inventaire.Wood += wood
 			fmt.Printf(green+"Vous avez récolté %d unités de bois. Total de bois : %d\n"+reset, wood, player.Inventaire.Wood)
 		case 2:
 			stone := rand.Intn(10) + 1
+			if stone > spaceRemaining {
+				stone = spaceRemaining // Ajuster la quantité à récolter
+			}
 			player.Inventaire.Stone += stone
 			fmt.Printf(green+"Vous avez récolté %d unités de pierre. Total de pierre : %d\n"+reset, stone, player.Inventaire.Stone)
 		case 3:
 			leaf := rand.Intn(10) + 1
+			if leaf > spaceRemaining {
+				leaf = spaceRemaining // Ajuster la quantité à récolter
+			}
 			player.Inventaire.Leaf += leaf
 			fmt.Printf(green+"Vous avez récolté %d feuilles. Total de feuilles : %d\n"+reset, leaf, player.Inventaire.Leaf)
 		case 4:
-			Fourrure := rand.Intn(10) + 1
-			player.Inventaire.Fourrure += Fourrure
-			fmt.Printf(green+"Vous avez récolté %d feuilles. Total de Fourrure de Loup : %d\n"+reset, Fourrure, player.Inventaire.Fourrure)
-
+			fourrure := rand.Intn(10) + 1
+			if fourrure > spaceRemaining {
+				fourrure = spaceRemaining // Ajuster la quantité à récolter
+			}
+			player.Inventaire.Fourrure += fourrure
+			fmt.Printf(green+"Vous avez récolté %d unités de fourrure de loup. Total de fourrure de loup : %d\n"+reset, fourrure, player.Inventaire.Fourrure)
 		case 5:
-			PeauTroll := rand.Intn(10) + 1
-			player.Inventaire.Peau_Troll += PeauTroll
-			fmt.Printf(green+"Vous avez récolté %d feuilles. Total de Peau de Troll : %d\n"+reset, PeauTroll, player.Inventaire.Peau_Troll)
+			peauTroll := rand.Intn(10) + 1
+			if peauTroll > spaceRemaining {
+				peauTroll = spaceRemaining // Ajuster la quantité à récolter
+			}
+			player.Inventaire.Peau_Troll += peauTroll
+			fmt.Printf(green+"Vous avez récolté %d unités de peau de troll. Total de peau de troll : %d\n"+reset, peauTroll, player.Inventaire.Peau_Troll)
 		case 6:
-			CuirSanglier := rand.Intn(10) + 1
-			player.Inventaire.CuirSanglier += CuirSanglier
-			fmt.Printf(green+"Vous avez récolté %d feuilles. Total de Cuir de Sanglier : %d\n"+reset, CuirSanglier, player.Inventaire.CuirSanglier)
+			cuirSanglier := rand.Intn(10) + 1
+			if cuirSanglier > spaceRemaining {
+				cuirSanglier = spaceRemaining // Ajuster la quantité à récolter
+			}
+			player.Inventaire.CuirSanglier += cuirSanglier
+			fmt.Printf(green+"Vous avez récolté %d unités de cuir de sanglier. Total de cuir de sanglier : %d\n"+reset, cuirSanglier, player.Inventaire.CuirSanglier)
 		case 7:
-			Plume_de_Corbeau := rand.Intn(10) + 1
-			player.Inventaire.PlumeCorbeau += Plume_de_Corbeau
-			fmt.Printf(green+"Vous avez récolté %d feuilles. Total de Plume de Corbeau : %d\n"+reset, Plume_de_Corbeau, player.Inventaire.PlumeCorbeau)
+			plumeCorbeau := rand.Intn(10) + 1
+			if plumeCorbeau > spaceRemaining {
+				plumeCorbeau = spaceRemaining // Ajuster la quantité à récolter
+			}
+			player.Inventaire.PlumeCorbeau += plumeCorbeau
+			fmt.Printf(green+"Vous avez récolté %d unités de plume de corbeau. Total de plume de corbeau : %d\n"+reset, plumeCorbeau, player.Inventaire.PlumeCorbeau)
 		default:
 			fmt.Println(red + "Choix invalide." + reset)
 		}
