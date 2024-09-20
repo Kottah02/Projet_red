@@ -302,7 +302,8 @@ func gatherResources(player *Player) {
 		// Calculer le total d'objets dans l'inventaire
 		totalItems := player.Inventaire.Wood + player.Inventaire.Stone + player.Inventaire.Leaf +
 			player.Inventaire.Fourrure + player.Inventaire.Peau_Troll + player.Inventaire.CuirSanglier +
-			player.Inventaire.PlumeCorbeau
+			player.Inventaire.PlumeCorbeau + player.Inventaire.Potions + player.Inventaire.Sword +
+			player.Inventaire.Bow + player.Inventaire.MagicStaff
 
 		// Si le total dépasse 50, on empêche de récolter plus de ressources
 		if totalItems >= 50 {
@@ -310,63 +311,59 @@ func gatherResources(player *Player) {
 			return
 		}
 
+		// Calculer l'espace restant
+		spaceRemaining := 50 - totalItems
+
 		switch resourceChoice {
 		case 0:
 			// Revenir au menu principal
 			return
 		case 1:
 			wood := rand.Intn(10) + 1
-			if totalItems+wood > 50 {
-				fmt.Println(red + "Pas assez d'espace pour récolter plus de bois." + reset)
-				continue
+			if wood > spaceRemaining {
+				wood = spaceRemaining // Ajuster la quantité à récolter
 			}
 			player.Inventaire.Wood += wood
 			fmt.Printf(green+"Vous avez récolté %d unités de bois. Total de bois : %d\n"+reset, wood, player.Inventaire.Wood)
 		case 2:
 			stone := rand.Intn(10) + 1
-			if totalItems+stone > 50 {
-				fmt.Println(red + "Pas assez d'espace pour récolter plus de pierre." + reset)
-				continue
+			if stone > spaceRemaining {
+				stone = spaceRemaining // Ajuster la quantité à récolter
 			}
 			player.Inventaire.Stone += stone
 			fmt.Printf(green+"Vous avez récolté %d unités de pierre. Total de pierre : %d\n"+reset, stone, player.Inventaire.Stone)
 		case 3:
 			leaf := rand.Intn(10) + 1
-			if totalItems+leaf > 50 {
-				fmt.Println(red + "Pas assez d'espace pour récolter plus de feuilles." + reset)
-				continue
+			if leaf > spaceRemaining {
+				leaf = spaceRemaining // Ajuster la quantité à récolter
 			}
 			player.Inventaire.Leaf += leaf
 			fmt.Printf(green+"Vous avez récolté %d feuilles. Total de feuilles : %d\n"+reset, leaf, player.Inventaire.Leaf)
 		case 4:
 			fourrure := rand.Intn(10) + 1
-			if totalItems+fourrure > 50 {
-				fmt.Println(red + "Pas assez d'espace pour récolter plus de fourrure de loup." + reset)
-				continue
+			if fourrure > spaceRemaining {
+				fourrure = spaceRemaining // Ajuster la quantité à récolter
 			}
 			player.Inventaire.Fourrure += fourrure
 			fmt.Printf(green+"Vous avez récolté %d unités de fourrure de loup. Total de fourrure de loup : %d\n"+reset, fourrure, player.Inventaire.Fourrure)
 		case 5:
 			peauTroll := rand.Intn(10) + 1
-			if totalItems+peauTroll > 50 {
-				fmt.Println(red + "Pas assez d'espace pour récolter plus de peau de troll." + reset)
-				continue
+			if peauTroll > spaceRemaining {
+				peauTroll = spaceRemaining // Ajuster la quantité à récolter
 			}
 			player.Inventaire.Peau_Troll += peauTroll
 			fmt.Printf(green+"Vous avez récolté %d unités de peau de troll. Total de peau de troll : %d\n"+reset, peauTroll, player.Inventaire.Peau_Troll)
 		case 6:
 			cuirSanglier := rand.Intn(10) + 1
-			if totalItems+cuirSanglier > 50 {
-				fmt.Println(red + "Pas assez d'espace pour récolter plus de cuir de sanglier." + reset)
-				continue
+			if cuirSanglier > spaceRemaining {
+				cuirSanglier = spaceRemaining // Ajuster la quantité à récolter
 			}
 			player.Inventaire.CuirSanglier += cuirSanglier
 			fmt.Printf(green+"Vous avez récolté %d unités de cuir de sanglier. Total de cuir de sanglier : %d\n"+reset, cuirSanglier, player.Inventaire.CuirSanglier)
 		case 7:
 			plumeCorbeau := rand.Intn(10) + 1
-			if totalItems+plumeCorbeau > 50 {
-				fmt.Println(red + "Pas assez d'espace pour récolter plus de plumes de corbeau." + reset)
-				continue
+			if plumeCorbeau > spaceRemaining {
+				plumeCorbeau = spaceRemaining // Ajuster la quantité à récolter
 			}
 			player.Inventaire.PlumeCorbeau += plumeCorbeau
 			fmt.Printf(green+"Vous avez récolté %d unités de plume de corbeau. Total de plume de corbeau : %d\n"+reset, plumeCorbeau, player.Inventaire.PlumeCorbeau)
@@ -432,21 +429,12 @@ func craftItems(player *Player) {
 		fmt.Print("Choix : ")
 		fmt.Scan(&craftChoice)
 
-		// Calculer le total d'objets dans l'inventaire
-		totalItems := player.Inventaire.Wood + player.Inventaire.Stone + player.Inventaire.Leaf +
-			player.Inventaire.Fourrure + player.Inventaire.Peau_Troll + player.Inventaire.CuirSanglier +
-			player.Inventaire.PlumeCorbeau + player.Inventaire.Sword + player.Inventaire.Bow + player.Inventaire.MagicStaff
-
 		switch craftChoice {
 		case 0:
 			// Revenir au menu principal
 			return
 		case 1:
 			if player.Inventaire.Wood >= 5 && player.Inventaire.Stone >= 5 && player.Gold >= 5 {
-				if totalItems+1 > 50 {
-					fmt.Println(red + "Inventaire plein. Vous ne pouvez pas fabriquer d'objets." + reset)
-					continue
-				}
 				player.Gold -= 5
 				player.Inventaire.Wood -= 5
 				player.Inventaire.Stone -= 5
@@ -457,10 +445,6 @@ func craftItems(player *Player) {
 			}
 		case 2:
 			if player.Inventaire.Wood >= 5 && player.Inventaire.Leaf >= 5 && player.Gold >= 5 {
-				if totalItems+1 > 50 {
-					fmt.Println(red + "Inventaire plein. Vous ne pouvez pas fabriquer d'objets." + reset)
-					continue
-				}
 				player.Gold -= 5
 				player.Inventaire.Wood -= 5
 				player.Inventaire.Leaf -= 5
@@ -471,10 +455,6 @@ func craftItems(player *Player) {
 			}
 		case 3:
 			if player.Inventaire.Wood >= 5 && player.Inventaire.Leaf >= 5 && player.Inventaire.Stone >= 5 && player.Gold >= 5 {
-				if totalItems+1 > 50 {
-					fmt.Println(red + "Inventaire plein. Vous ne pouvez pas fabriquer d'objets." + reset)
-					continue
-				}
 				player.Gold -= 5
 				player.Inventaire.Wood -= 5
 				player.Inventaire.Leaf -= 5
@@ -485,11 +465,7 @@ func craftItems(player *Player) {
 				fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
 			}
 		case 4:
-			if player.Gold >= 5 && player.Inventaire.PlumeCorbeau >= 3 && player.Inventaire.CuirSanglier >= 5 {
-				if totalItems+1 > 50 {
-					fmt.Println(red + "Inventaire plein. Vous ne pouvez pas fabriquer d'objets." + reset)
-					continue
-				}
+			if player.Gold >= 5 && player.Inventaire.PlumeCorbeau >= 1 && player.Inventaire.CuirSanglier >= 1 {
 				player.Gold -= 5
 				player.Inventaire.PlumeCorbeau -= 3
 				player.Inventaire.CuirSanglier -= 5
@@ -500,30 +476,22 @@ func craftItems(player *Player) {
 				fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
 			}
 		case 5:
-			if player.Gold >= 5 && player.Inventaire.Fourrure >= 4 && player.Inventaire.Peau_Troll >= 1 {
-				if totalItems+1 > 50 {
-					fmt.Println(red + "Inventaire plein. Vous ne pouvez pas fabriquer d'objets." + reset)
-					continue
-				}
+			if player.Gold >= 5 && player.Inventaire.Fourrure >= 2 && player.Inventaire.Peau_Troll >= 1 {
 				player.Gold -= 5
 				player.Inventaire.Fourrure -= 4
 				player.Inventaire.Peau_Troll -= 1
 				player.equip.Head = stuff{"Cape Bouftou", 15}
-				player.HealthMax += player.equip.Head.pvb
+				player.HealthMax += player.equip.Plastron.pvb
 				fmt.Println(green + "Vous avez fabriqué une Cape Bouftou." + reset)
 			} else {
 				fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
 			}
 		case 6:
-			if player.Gold >= 5 && player.Inventaire.Fourrure >= 3 && player.Inventaire.CuirSanglier >= 4 {
-				if totalItems+1 > 50 {
-					fmt.Println(red + "Inventaire plein. Vous ne pouvez pas fabriquer d'objets." + reset)
-					continue
-				}
+			if player.Gold >= 5 && player.Inventaire.Fourrure >= 1 && player.Inventaire.CuirSanglier >= 1 {
 				player.Gold -= 5
 				player.Inventaire.Fourrure -= 3
 				player.Inventaire.CuirSanglier -= 4
-				player.equip.Feet = stuff{"Boufbotte", 5}
+				player.equip.Feet = stuff{"Boubfbotte", 5}
 				player.HealthMax += player.equip.Feet.pvb
 				fmt.Println(green + "Vous avez fabriqué une paire de Boufbotte." + reset)
 			} else {
@@ -663,76 +631,118 @@ func marchantMenu(player *Player) {
 		fmt.Print("Choix : ")
 		fmt.Scan(&choice)
 
+		// Calculer le total d'objets dans l'inventaire
+		totalItems := player.Inventaire.Wood + player.Inventaire.Stone + player.Inventaire.Leaf +
+			player.Inventaire.Fourrure + player.Inventaire.Peau_Troll + player.Inventaire.CuirSanglier +
+			player.Inventaire.PlumeCorbeau + player.Inventaire.Potions + player.Inventaire.Sword +
+			player.Inventaire.Bow + player.Inventaire.MagicStaff
+
 		switch choice {
 		case 1:
 			if player.Gold >= 3 {
-				addInventory(player, "potion", 1)
-				fmt.Println(green + "Vous avez acheté une Potion de vie." + reset)
-				player.Gold -= 3
+				if totalItems < 50 {
+					addInventory(player, "potion", 1)
+					fmt.Println(green + "Vous avez acheté une Potion de vie." + reset)
+					player.Gold -= 3
+				} else {
+					fmt.Println(red + "Inventaire plein. Vous ne pouvez pas acheter cet objet." + reset)
+				}
 			} else {
 				fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
 			}
 		case 2:
 			if player.Gold >= 6 {
-				addInventory(player, "potionPoison", 1)
-				fmt.Println(green + "Vous avez acheté une Potion de poison." + reset)
-				player.Gold -= 6
+				if totalItems < 50 {
+					addInventory(player, "potionPoison", 1)
+					fmt.Println(green + "Vous avez acheté une Potion de poison." + reset)
+					player.Gold -= 6
+				} else {
+					fmt.Println(red + "Inventaire plein. Vous ne pouvez pas acheter cet objet." + reset)
+				}
 			} else {
 				fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
 			}
 		case 3:
 			if player.Gold >= 25 {
-				player.Inventaire.SpellBookCount++
-				fmt.Println(green + "Vous avez acheté un Livre de compétence : Boule de Feu." + reset)
-				player.Gold -= 25
+				if totalItems < 50 {
+					player.Inventaire.SpellBookCount++
+					fmt.Println(green + "Vous avez acheté un Livre de compétence : Boule de Feu." + reset)
+					player.Gold -= 25
+				} else {
+					fmt.Println(red + "Inventaire plein. Vous ne pouvez pas acheter cet objet." + reset)
+				}
 			} else {
 				fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
 			}
 		case 4:
 			if player.Gold >= 4 {
-				player.Inventaire.Fourrure++
-				fmt.Println(green + "Vous avez acheté une Fourrure de Loup." + reset)
-				player.Gold -= 4
+				if totalItems < 50 {
+					player.Inventaire.Fourrure++
+					fmt.Println(green + "Vous avez acheté une Fourrure de Loup." + reset)
+					player.Gold -= 4
+				} else {
+					fmt.Println(red + "Inventaire plein. Vous ne pouvez pas acheter cet objet." + reset)
+				}
 			} else {
 				fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
 			}
 		case 5:
 			if player.Gold >= 7 {
-				player.Inventaire.Peau_Troll++
-				fmt.Println(green + "Vous avez acheté une Peau de Troll." + reset)
-				player.Gold -= 7
+				if totalItems < 50 {
+					player.Inventaire.Peau_Troll++
+					fmt.Println(green + "Vous avez acheté une Peau de Troll." + reset)
+					player.Gold -= 7
+				} else {
+					fmt.Println(red + "Inventaire plein. Vous ne pouvez pas acheter cet objet." + reset)
+				}
 			} else {
 				fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
 			}
 		case 6:
 			if player.Gold >= 3 {
-				player.Inventaire.CuirSanglier++
-				fmt.Println(green + "Vous avez acheté un Cuir de Sanglier." + reset)
-				player.Gold -= 3
+				if totalItems < 50 {
+					player.Inventaire.CuirSanglier++
+					fmt.Println(green + "Vous avez acheté un Cuir de Sanglier." + reset)
+					player.Gold -= 3
+				} else {
+					fmt.Println(red + "Inventaire plein. Vous ne pouvez pas acheter cet objet." + reset)
+				}
 			} else {
 				fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
 			}
 		case 7:
 			if player.Gold >= 100 {
-				player.Inventaire.Sword++
-				fmt.Println(green + "Vous avez acheté une épée." + reset)
-				player.Gold -= 100
+				if totalItems < 50 {
+					player.Inventaire.Sword++
+					fmt.Println(green + "Vous avez acheté une épée." + reset)
+					player.Gold -= 100
+				} else {
+					fmt.Println(red + "Inventaire plein. Vous ne pouvez pas acheter cet objet." + reset)
+				}
 			} else {
 				fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
 			}
 		case 8:
 			if player.Gold >= 100 {
-				player.Inventaire.Bow++
-				fmt.Println(green + "Vous avez acheté un arc." + reset)
-				player.Gold -= 100
+				if totalItems < 50 {
+					player.Inventaire.Bow++
+					fmt.Println(green + "Vous avez acheté un arc." + reset)
+					player.Gold -= 100
+				} else {
+					fmt.Println(red + "Inventaire plein. Vous ne pouvez pas acheter cet objet." + reset)
+				}
 			} else {
 				fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
 			}
 		case 9:
 			if player.Gold >= 100 {
-				player.Inventaire.MagicStaff++
-				fmt.Println(green + "Vous avez acheté une baguette magique." + reset)
-				player.Gold -= 100
+				if totalItems < 50 {
+					player.Inventaire.MagicStaff++
+					fmt.Println(green + "Vous avez acheté une baguette magique." + reset)
+					player.Gold -= 100
+				} else {
+					fmt.Println(red + "Inventaire plein. Vous ne pouvez pas acheter cet objet." + reset)
+				}
 			} else {
 				fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
 			}
