@@ -79,15 +79,11 @@ func main() {
 	fmt.Println("Points d'attaque:", gobelin.Attack)
 	fmt.Scanln()
 
-	Debut()
-}
-
-func Debut() {
 	rand.Seed(time.Now().UnixNano())
 
 	// Choisir une classe
 	player := createCharacter()
-
+	monstre := InitGoblin()
 	// Boucle principale du jeu
 	for {
 
@@ -101,6 +97,7 @@ func Debut() {
 		fmt.Println(yellow + "5" + reset + " - Consulter votre inventaire")
 		fmt.Println(yellow + "6" + reset + " - Accéder au Marchand")
 		fmt.Println(yellow + "7" + reset + " - Quitter le jeu")
+		fmt.Println(yellow + "8" + reset + " - e")
 		fmt.Println(cyan + "================================================" + reset)
 
 		var choice int
@@ -122,7 +119,10 @@ func Debut() {
 			marchantMenu(&player)
 		case 7:
 			fmt.Println(green + "\nMerci d'avoir joué !" + reset)
+
 			return
+		case 8:
+			entrainementGobelin(monstre, &player)
 		default:
 			fmt.Println(red + "Choix invalide." + reset)
 		}
@@ -158,8 +158,9 @@ func createCharacter() Player {
 		fmt.Scan(&sexChoice)
 		if sexChoice == 1 || sexChoice == 2 {
 			break
+		} else {
+			fmt.Println(red + "Choix invalide. Veuillez entrer 1 ou 2." + reset)
 		}
-		fmt.Println(red + "Choix invalide. Veuillez entrer 1 ou 2." + reset)
 	}
 
 	switch sexChoice {
@@ -474,7 +475,6 @@ func takePot(player *Player) {
 }
 
 // Fonction pour afficher l'inventaire
-
 func accessInventory(player *Player) {
 	fmt.Println(cyan + "\n=================== Inventaire ==================" + reset)
 
@@ -714,4 +714,17 @@ func goblinPattern(goblin Monstre, joueur *Player, tour int) {
 
 	// Affichage des points de vie restants
 	fmt.Printf("%s : %d/%d PV\n", joueur.Pseudo, joueur.Health, joueur.HealthMax)
+}
+
+func entrainementGobelin(goblin Monstre, joueur *Player) {
+	for tour := 1; tour <= 6; tour++ {
+		fmt.Printf("Tour %d :\n", tour)
+		goblinPattern(goblin, joueur, tour)
+
+		// Vérifier si le joueur est toujours en vie
+		if joueur.Health == 0 {
+			fmt.Println("Le joueur a été vaincu !")
+			break
+		}
+	}
 }
