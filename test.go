@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"time"
+	"unicode"
 )
 
 // ANSI Color Codes
@@ -27,7 +28,6 @@ type Player struct {
 	Skills     []string
 	Gold       int
 	equip      Equipment
-	Attack     int
 }
 
 type Objet struct {
@@ -49,9 +49,9 @@ type Objet struct {
 }
 
 type Equipment struct {
-	head     stuff
-	plastron stuff
-	feet     stuff
+	Head     stuff
+	Plastron stuff
+	Feet     stuff
 }
 
 type stuff struct {
@@ -59,12 +59,10 @@ type stuff struct {
 	pvb  int
 }
 
-type Monstre struct {
-	Name      string
-	HealthMax int
-	Health    int
-	Attack    int
-}
+const (
+	minPseudoLength = 3  // Longueur minimale du pseudo
+	maxPseudoLength = 12 // Longueur maximale du pseudo
+)
 
 func main() {
 	fmt.Println("Bienvenue dans le Monde des Douze, les aventuriers cherchent les Dofus, des œufs de dragons aux pouvoirs immenses.")
@@ -72,11 +70,6 @@ func main() {
 	fmt.Println("La quête des Dofus primordiaux est centrale, influençant le destin du monde et entraînant des combats épiques.")
 	fmt.Println(red + "LE MONDE COMPTE SUR TOI JEUNE AVENTURIER" + reset)
 	fmt.Println("Appuyez sur Entrée pour continuer..." + reset)
-	gobelin := InitGoblin()
-	fmt.Println("Nom:", gobelin.Name)
-	fmt.Println("Points de vie maximum:", gobelin.HealthMax)
-	fmt.Println("Points de vie actuels:", gobelin.Health)
-	fmt.Println("Points d'attaque:", gobelin.Attack)
 	fmt.Scanln()
 
 	rand.Seed(time.Now().UnixNano())
@@ -87,9 +80,9 @@ func main() {
 	// Boucle principale du jeu
 	for {
 
-		fmt.Println("\n" + cyan + "================================================" + reset)
-		fmt.Println("   Que voulez-vous faire ?")
-		fmt.Println("================================================")
+		fmt.Println("\n" + blue + "=================================================" + reset)
+		fmt.Println(yellow + "   	     Que voulez-vous faire ?" + reset)
+		fmt.Println("\n" + cyan + "|================================================|")
 		fmt.Println(yellow + "1" + reset + " - Afficher l'Information du personnage")
 		fmt.Println(yellow + "2" + reset + " - Récolter des ressources")
 		fmt.Println(yellow + "3" + reset + " - Combattre des monstres")
@@ -97,7 +90,6 @@ func main() {
 		fmt.Println(yellow + "5" + reset + " - Consulter votre inventaire")
 		fmt.Println(yellow + "6" + reset + " - Accéder au Marchand")
 		fmt.Println(yellow + "7" + reset + " - Quitter le jeu")
-		fmt.Println(yellow + "8" + reset + " - e")
 		fmt.Println(cyan + "================================================" + reset)
 
 		var choice int
@@ -130,27 +122,54 @@ func main() {
 }
 
 func DisplayInfo(player Player) {
-	fmt.Printf("Pseudo : %s\nSexe : %s\nClasse : %s\nNiveau : %d\nVie actuelle : %d\nVie Max : %d\nPièce d'or : %d\n", player.Pseudo, player.Sex, player.Class, player.Level, player.Health, player.HealthMax, player.Gold)
+	fmt.Printf("Pseudo : %s\nSexe : %s\nClasse : %s\nNiveau : %d\nVie actuelle : %d\nVie Max : %d\nPièce d'or : %d\n Equipement :\n-Casque : %s\n-Plastron : %s\n-Bottes : %s\n", player.Pseudo, player.Sex, player.Class, player.Level, player.Health, player.HealthMax, player.Gold, player.equip.Head.name, player.equip.Plastron.name, player.equip.Feet.name)
+}
+
+// Fonction pour vérifier que le pseudo ne contient que des lettres
+func isValidPseudo(pseudo string) bool {
+	for _, char := range pseudo {
+		if !unicode.IsLetter(char) {
+			return false
+		}
+	}
+	return true
 }
 
 // Fonction pour créer le personnage (pseudo, sexe, classe)
 func createCharacter() Player {
 	var player Player
+	var pseudo string
 
-	// Choisir le pseudo
-	fmt.Println(cyan + "================================================" + reset)
-	fmt.Println("   Entrez votre pseudo :")
-	fmt.Println(cyan + "================================================" + reset)
-	fmt.Print("Pseudo : ")
-	fmt.Scan(&player.Pseudo)
+	// Boucle pour obtenir un pseudo valide
+	for {
+		fmt.Println(cyan + "|================================================|" + reset)
+		fmt.Println("   Entrez votre pseudo (lettres uniquement, entre", minPseudoLength, "et", maxPseudoLength, "caractères) :")
+		fmt.Println(cyan + "|================================================|" + reset)
+		fmt.Print("Pseudo : ")
+		fmt.Scan(&pseudo)
+
+		// Vérification de la longueur du pseudo
+		if len(pseudo) < minPseudoLength || len(pseudo) > maxPseudoLength {
+			fmt.Println(red+"Erreur : Le pseudo doit contenir entre", minPseudoLength, "et", maxPseudoLength, "caractères."+reset)
+			continue
+		}
+
+		// Vérification des caractères (lettres uniquement)
+		if isValidPseudo(pseudo) {
+			player.Pseudo = pseudo
+			break
+		} else {
+			fmt.Println(red + "Erreur : Le pseudo ne doit contenir que des lettres." + reset)
+		}
+	}
 
 	// Choisir le sexe
-	fmt.Println(cyan + "\n================================================" + reset)
+	fmt.Println(cyan + "\n|================================================|" + reset)
 	fmt.Println("   Choisissez votre sexe :")
-	fmt.Println(cyan + "================================================" + reset)
+	fmt.Println(cyan + "|================================================|" + reset)
 	fmt.Println(yellow + "1" + reset + " - Homme")
 	fmt.Println(yellow + "2" + reset + " - Femme")
-	fmt.Println(cyan + "================================================" + reset)
+	fmt.Println(cyan + "|================================================|" + reset)
 
 	var sexChoice int
 	for {
@@ -171,68 +190,73 @@ func createCharacter() Player {
 	}
 
 	// Choisir la classe
-	fmt.Println(cyan + "\n================================================" + reset)
-	fmt.Println("   Choisissez votre classe :")
-	fmt.Println(cyan + "================================================" + reset)
-	fmt.Println(yellow + "1" + reset + " - Guerrier")
-	fmt.Println(yellow + "2" + reset + " - Archer")
-	fmt.Println(yellow + "3" + reset + " - Mage")
-	fmt.Println(yellow + "4" + reset + " - Elfe")
-	fmt.Println(cyan + "================================================" + reset)
+	for {
+		fmt.Println(cyan + "\n================================================" + reset)
+		fmt.Println("   Choisissez votre classe :")
+		fmt.Println(cyan + "================================================" + reset)
+		fmt.Println(yellow + "1" + reset + " - Iop")
+		fmt.Println(yellow + "2" + reset + " - Crâ")
+		fmt.Println(yellow + "3" + reset + " - Osamodas")
+		fmt.Println(yellow + "4" + reset + " - Eniripsa")
+		fmt.Println(cyan + "================================================" + reset)
 
-	var classChoice int
-	fmt.Print("Choix : ")
-	fmt.Scan(&classChoice)
+		var classChoice string
+		fmt.Print("Choix : ")
+		fmt.Scan(&classChoice)
 
-	switch classChoice {
-	case 1:
-		player.Class = "Guerrier"
-		fmt.Println(green + "Vous avez choisi : Guerrier" + reset)
-		player.HealthMax = 200
-		player.Health = 200
-		player.Inventaire.Potions = 3
-		player.Level = 1
-		player.Gold = 100
-		player.Attack = 10
-	case 2:
-		player.Class = "Archer"
-		fmt.Println(green + "Vous avez choisi : Archer" + reset)
-		player.HealthMax = 100
-		player.Health = 100
-		player.Inventaire.Potions = 3
-		player.Level = 1
-		player.Gold = 100
-		player.Attack = 30
-
-	case 3:
-		player.Class = "Mage"
-		fmt.Println(green + "Vous avez choisi : Mage" + reset)
-		player.HealthMax = 150
-		player.Health = 250
-		player.Inventaire.Potions = 3
-		player.Level = 1
-		player.Gold = 100
-		player.Attack = 20
-	case 4:
-		player.Class = "Elfe"
-		fmt.Println(green + "Vous avez choisi : Elfe" + reset)
-		player.HealthMax = 100
-		player.Health = 40
-		player.Inventaire.Potions = 3
-		player.Level = 1
-		player.Gold = 100
-		player.Attack = 10
-	default:
-		fmt.Println(red + "Choix invalide, vous serez un Guerrier par défaut." + reset)
-		player.Class = "Guerrier"
+		// Vérification que l'entrée contient exactement un caractère, qui doit être un chiffre entre '1' et '4'
+		if len(classChoice) == 1 && unicode.IsDigit(rune(classChoice[0])) {
+			switch classChoice {
+			case "1":
+				player.Class = "Iop"
+				fmt.Println(green + "Vous avez choisi : Iop" + reset)
+				player.HealthMax = 200
+				player.Health = 200
+				player.Inventaire.Potions = 3
+				player.Level = 1
+				player.Gold = 100
+				return player // Quitte la boucle après un choix valide
+			case "2":
+				player.Class = "Crâ"
+				fmt.Println(green + "Vous avez choisi : Crâ" + reset)
+				player.HealthMax = 100
+				player.Health = 100
+				player.Inventaire.Potions = 3
+				player.Level = 1
+				player.Gold = 100
+				return player
+			case "3":
+				player.Class = "Osamodas"
+				fmt.Println(green + "Vous avez choisi : Osamodas" + reset)
+				player.HealthMax = 250
+				player.Health = 250
+				player.Inventaire.Potions = 3
+				player.Level = 1
+				player.Gold = 100
+				return player
+			case "4":
+				player.Class = "Eniripsa"
+				fmt.Println(green + "Vous avez choisi : Eniripsa" + reset)
+				player.HealthMax = 100
+				player.Health = 40
+				player.Inventaire.Potions = 3
+				player.Level = 1
+				player.Gold = 100
+				return player
+			default:
+				fmt.Println(red + "Choix invalide, veuillez entrer un chiffre entre 1 et 4." + reset)
+			}
+		} else {
+			fmt.Println(red + "Choix invalide, veuillez entrer un seul chiffre entre 1 et 4." + reset)
+		}
 	}
 
 	player.Skills = append(player.Skills, "Coup de poing")
 	fmt.Println(green + "Vous avez appris une nouvelle compétence : Coup de poing" + reset)
 
-	player.equip.head = stuff{name: "Chapeau de l'aventurier", pvb: 0}
-	player.equip.plastron = stuff{name: "Plastron de l'aventurier", pvb: 0}
-	player.equip.feet = stuff{name: "Botte de l'aventurier", pvb: 0}
+	player.equip.Head = stuff{name: "Chapeau de l'aventurier", pvb: 0}
+	player.equip.Plastron = stuff{name: "Plastron de l'aventurier", pvb: 0}
+	player.equip.Feet = stuff{name: "Botte de l'aventurier", pvb: 0}
 	return player
 }
 
@@ -297,65 +321,38 @@ func gatherResources(player *Player) {
 
 // Fonction pour combattre des monstres
 func combat(player *Player) {
-	c := 0
 	monsterHealth := rand.Intn(50) + 50
-	for monsterHealth > 0 || player.Health > 0 {
+	fmt.Printf(cyan + "\n================================================\n" + reset)
+	fmt.Printf("   Vous combattez un monstre avec %d points de vie !\n", monsterHealth)
+	fmt.Println(cyan + "================================================" + reset)
+
+	for monsterHealth > 0 && player.Health > 0 {
 		// Attaque du joueur
-		fmt.Printf(cyan + "\n================================================\n" + reset)
-		fmt.Printf("   Vous allez se combattre avec %d de points de vie\n", player.Health)
-		fmt.Println(cyan + "================================================" + reset)
+		damage := rand.Intn(20) + 10
+		monsterHealth -= damage
+		fmt.Printf(green+"Vous attaquez et infligez %d de dégâts. Vie du monstre restante : %d\n"+reset, damage, monsterHealth)
 
-		fmt.Println("Veux-tu prendre une potion avant d'aller au combat" + reset)
-		fmt.Printf(yellow + "1" + reset + " - Prendre une potion\n")
-		fmt.Printf(yellow + "2" + reset + " - Affronter un monstre\n")
-		fmt.Println(yellow + "0" + reset + " - Retour")
-
-		var choice int
-		fmt.Print("Choix : ")
-		fmt.Scan(&choice)
-		fmt.Println(cyan + "================================================" + reset)
-		switch choice {
-		case 1:
-			takePot(player)
-		case 2:
-			if monsterHealth > 0 {
-				c += 1
-				fmt.Printf("Tour : %d\n", c)
-				damage := player.Attack
-				monsterHealth -= damage
-				fmt.Printf(cyan + "\n===================================================\n" + reset)
-				fmt.Printf("   Vous allez se combattre avec %d de points de vie\n", player.Health)
-				fmt.Println(cyan + "===================================================" + reset)
-				fmt.Printf(green+"Vous attaquez et infligez %d de dégâts. Vie du monstre restante : %d\n"+reset, damage, monsterHealth)
-
-				// Attaque du monstre
-				if monsterHealth > 0 {
-					monsterDamage := rand.Intn(15) + 5
-					player.Health -= monsterDamage
-					fmt.Printf(red+"Le monstre vous attaque et inflige %d de dégâts.\n"+reset, monsterDamage)
-				} else {
-					fmt.Println(green + "Le monstre est vaincu !")
-					fmt.Printf("Il vous reste %d de points de vie\n", player.Health)
-				}
-				if player.Health < 0 {
-					fmt.Println(red + "Vous êtes mort...\n" + reset)
-					player.Health = player.HealthMax / 2
-					fmt.Printf(green+"Vous avez été ressuscité avec %d points de vie.\n"+reset, player.Health)
-					// Le joueur peut trouver une potion après le combat
-				}
-				if rand.Float32() < 0.3 { // 30% de chance de trouver une potion
-					player.Inventaire.Potions++
-					fmt.Println(green + "Vous avez trouvé une potion !\n" + reset)
-
-				}
-			} else {
-				fmt.Println(green + "Il n'y a plus de monstre.\n" + reset)
-			}
-		case 0:
-			return
-		default:
-			fmt.Println(red + "Choix invalide." + reset)
+		if monsterHealth <= 0 {
+			fmt.Println(green + "Vous avez vaincu le monstre !" + reset)
+			break
 		}
+
+		// Attaque du monstre
+		monsterDamage := rand.Intn(15) + 5
+		player.Health -= monsterDamage
+		fmt.Printf(red+"Le monstre vous attaque et inflige %d de dégâts. Votre vie restante : %d\n"+reset, monsterDamage, player.Health)
+
+		if player.Health <= 0 {
+			fmt.Println(red + "Vous êtes mort..." + reset)
+			player.Health = player.HealthMax / 2
+			fmt.Printf(green+"Vous avez été ressuscité avec %d points de vie.\n"+reset, player.Health)
+		}
+	}
+
+	// Le joueur peut trouver une potion après le combat
+	if rand.Float32() < 0.3 { // 30% de chance de trouver une potion
+		player.Inventaire.Potions++
+		fmt.Println(green + "Vous avez trouvé une potion !" + reset)
 	}
 }
 
@@ -368,9 +365,9 @@ func craftItems(player *Player) {
 		fmt.Println(yellow + "1" + reset + " - Épée (5 bois, 5 pierre)")
 		fmt.Println(yellow + "2" + reset + " - Arc (5 bois, 5 feuilles)")
 		fmt.Println(yellow + "3" + reset + " - Bâton magique (5 bois, 5 feuilles, 5 pierre)")
-		fmt.Println(yellow + "4" + reset + " - Chapeau de l'aventurier (1 Plume de Corbeau, 1 Cuir de Sanglier)")
-		fmt.Println(yellow + "5" + reset + " - Tunique de l'aventurier (2 Fourrures de Loup, 1 Peau de troll)")
-		fmt.Println(yellow + "6" + reset + " - Bottes de l'aventurier (1 Fourrure de Loup, 1 Cuir de Sanglier)")
+		fmt.Println(yellow + "4" + reset + " - Coiffe Bouftou (5 cuire de sanglier, 3 plume de corbeau)")
+		fmt.Println(yellow + "5" + reset + " - Cape bouftou (4 fourrures de loup, 1 peau de Troll)")
+		fmt.Println(yellow + "6" + reset + " - Boufbotte (3 fourrures de loup, 4 cuir de sanglier)")
 		fmt.Println(yellow + "0" + reset + " - Retour")
 		fmt.Println(cyan + "================================================" + reset)
 
@@ -416,33 +413,33 @@ func craftItems(player *Player) {
 		case 4:
 			if player.Gold >= 5 && player.Inventaire.PlumeCorbeau >= 1 && player.Inventaire.CuirSanglier >= 1 {
 				player.Gold -= 5
-				player.Inventaire.PlumeCorbeau -= 1
-				player.Inventaire.CuirSanglier -= 1
-				player.equip.head = stuff{"Chapeau de kheir", 10}
-				player.HealthMax += player.equip.head.pvb
-				fmt.Println(green + "Vous avez fabriqué un Chapeau de l'aventurier." + reset)
+				player.Inventaire.PlumeCorbeau -= 3
+				player.Inventaire.CuirSanglier -= 5
+				player.equip.Head = stuff{"Coiffe Bouftou", 10}
+				player.HealthMax += player.equip.Head.pvb
+				fmt.Println(green + "Vous avez fabriqué une Coiffe Bouftou." + reset)
 			} else {
 				fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
 			}
 		case 5:
 			if player.Gold >= 5 && player.Inventaire.Fourrure >= 2 && player.Inventaire.Peau_Troll >= 1 {
 				player.Gold -= 5
-				player.Inventaire.Fourrure -= 2
+				player.Inventaire.Fourrure -= 4
 				player.Inventaire.Peau_Troll -= 1
-				player.equip.head = stuff{"Plastron de kheir", 10}
-				player.HealthMax += player.equip.plastron.pvb
-				fmt.Println(green + "Vous avez fabriqué un Tunique de l'aventurier." + reset)
+				player.equip.Head = stuff{"Cape Bouftou", 15}
+				player.HealthMax += player.equip.Plastron.pvb
+				fmt.Println(green + "Vous avez fabriqué une Cape Bouftou." + reset)
 			} else {
 				fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
 			}
 		case 6:
 			if player.Gold >= 5 && player.Inventaire.Fourrure >= 1 && player.Inventaire.CuirSanglier >= 1 {
 				player.Gold -= 5
-				player.Inventaire.Fourrure -= 1
-				player.Inventaire.CuirSanglier -= 1
-				player.equip.head = stuff{"Botte de kheir", 10}
-				player.HealthMax += player.equip.feet.pvb
-				fmt.Println(green + "Vous avez fabriqué une paire de bottes l'aventurier." + reset)
+				player.Inventaire.Fourrure -= 3
+				player.Inventaire.CuirSanglier -= 4
+				player.equip.Feet = stuff{"Boubfbotte", 5}
+				player.HealthMax += player.equip.Feet.pvb
+				fmt.Println(green + "Vous avez fabriqué une paire de Boufbotte." + reset)
 			} else {
 				fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
 			}
@@ -476,7 +473,7 @@ func takePot(player *Player) {
 
 // Fonction pour afficher l'inventaire
 func accessInventory(player *Player) {
-	fmt.Println(cyan + "\n=================== Inventaire ==================" + reset)
+	fmt.Println(cyan + "\n|=================== Inventaire ==================|" + reset)
 
 	// Information du joueur
 	fmt.Printf("Pseudo : %s | Sexe : %s | Classe : %s Vie Max : %d | Vie Actuelle : %d | Niveau : %d | Pièces d'or : %d\n ", player.Pseudo, player.Sex, player.Class, player.HealthMax, player.Health, player.Level, player.Gold)
@@ -523,6 +520,10 @@ func accessInventory(player *Player) {
 	fmt.Printf("- Bois : %d\n", player.Inventaire.Wood)
 	fmt.Printf("- Pierre : %d\n", player.Inventaire.Stone)
 	fmt.Printf("- Feuilles : %d\n", player.Inventaire.Leaf)
+	fmt.Printf("- Fourrure de loup : %d\n", player.Inventaire.Fourrure)
+	fmt.Printf("- Cuire de sanglier : %d\n", player.Inventaire.CuirSanglier)
+	fmt.Printf("- Plume de corbeau : %d\n", player.Inventaire.PlumeCorbeau)
+	fmt.Printf("- Peau de troll : %d\n", player.Inventaire.Peau_Troll)
 
 	// Consommables
 	fmt.Println(cyan + "\n[Consommables]" + reset)
@@ -560,100 +561,104 @@ func accessInventory(player *Player) {
 
 // Tâche 7
 func marchantMenu(player *Player) {
-	fmt.Println(cyan + "\n=================== Marchand ==================" + reset)
-	fmt.Println("1 - Acheter une Potion de vie (3 pièces d'or)")
-	fmt.Println("2 - Acheter une Potion de poison (6 pièces d'or)")
-	fmt.Println("3 - Acheter un livre de Compétence (25 pièces d'or)")
-	fmt.Println("4 - Acheter une Fourrure de Loup (4 pièces d'or)")
-	fmt.Println("5 - Acheter une Peau de Troll (7 pièces d'or)")
-	fmt.Println("6 - Acheter un Cuir de Sanglier (3 pièces d'or)")
-	fmt.Println("7 - Acheter une épée (100 pièces d'or)")
-	fmt.Println("8 - Acheter une Arc (100 pièces d'or)")
-	fmt.Println("9 - Acheter une Baguette Magique (100 pièces d'or)")
-	fmt.Println("0 - Retour")
-	fmt.Println(cyan + "================================================" + reset)
+	for {
+		fmt.Println(cyan + "\n=================== Marchand ==================" + reset)
+		fmt.Println(yellow + "1" + reset + " - Acheter une Potion de vie (3 pièces d'or)")
+		fmt.Println(yellow + "2" + reset + " - Acheter une Potion de poison (6 pièces d'or)")
+		fmt.Println(yellow + "3" + reset + " - Acheter un livre de Compétence (25 pièces d'or)")
+		fmt.Println(yellow + "4" + reset + " - Acheter une Fourrure de Loup (4 pièces d'or)")
+		fmt.Println(yellow + "5" + reset + " - Acheter une Peau de Troll (7 pièces d'or)")
+		fmt.Println(yellow + "6" + reset + " - Acheter un Cuir de Sanglier (3 pièces d'or)")
+		fmt.Println(yellow + "7" + reset + " - Acheter une épée (100 pièces d'or)")
+		fmt.Println(yellow + "8" + reset + " - Acheter une Arc (100 pièces d'or)")
+		fmt.Println(yellow + "9" + reset + " - Acheter une Baguette Magique (100 pièces d'or)")
+		fmt.Println(yellow + "0" + reset + " - Retour")
+		fmt.Printf("\n Vous Avez %d Or\n", player.Gold)
+		fmt.Println(cyan + "================================================" + reset)
 
-	var choice int
-	fmt.Print("Choix : ")
-	fmt.Scan(&choice)
+		var choice int
+		fmt.Print("Choix : ")
+		fmt.Scan(&choice)
 
-	switch choice {
-	case 1:
-		if player.Gold >= 3 {
-			addInventory(player, "potion", 1)
-			fmt.Println(green + "Vous avez acheté une Potion de vie." + reset)
-			player.Gold -= 3
-		} else {
-			fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
+		switch choice {
+		case 1:
+			if player.Gold >= 3 {
+				addInventory(player, "potion", 1)
+				fmt.Println(green + "Vous avez acheté une Potion de vie." + reset)
+				player.Gold -= 3
+			} else {
+				fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
+			}
+		case 2:
+			if player.Gold >= 6 {
+				addInventory(player, "potionPoison", 1)
+				fmt.Println(green + "Vous avez acheté une Potion de poison." + reset)
+				player.Gold -= 6
+			} else {
+				fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
+			}
+		case 3:
+			if player.Gold >= 25 {
+				player.Inventaire.SpellBookCount++
+				fmt.Println(green + "Vous avez acheté un Livre de compétence : Boule de Feu." + reset)
+				player.Gold -= 25
+			} else {
+				fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
+			}
+		case 4:
+			if player.Gold >= 4 {
+				player.Inventaire.Fourrure++
+				fmt.Println(green + "Vous avez acheté une Fourrure de Loup." + reset)
+				player.Gold -= 4
+			} else {
+				fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
+			}
+		case 5:
+			if player.Gold >= 7 {
+				player.Inventaire.Peau_Troll++
+				fmt.Println(green + "Vous avez acheté une Peau de Troll." + reset)
+				player.Gold -= 7
+			} else {
+				fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
+			}
+		case 6:
+			if player.Gold >= 3 {
+				player.Inventaire.CuirSanglier++
+				fmt.Println(green + "Vous avez acheté un Cuir de Sanglier." + reset)
+				player.Gold -= 3
+			} else {
+				fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
+			}
+		case 7:
+			if player.Gold >= 100 {
+				player.Inventaire.Sword++
+				fmt.Println(green + "Vous avez acheté une épée." + reset)
+				player.Gold -= 100
+			} else {
+				fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
+			}
+		case 8:
+			if player.Gold >= 100 {
+				player.Inventaire.Bow++
+				fmt.Println(green + "Vous avez acheté un arc." + reset)
+				player.Gold -= 100
+			} else {
+				fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
+			}
+		case 9:
+			if player.Gold >= 100 {
+				player.Inventaire.MagicStaff++
+				fmt.Println(green + "Vous avez acheté une baguette magique." + reset)
+				player.Gold -= 100
+			} else {
+				fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
+			}
+		case 0:
+			// Retourne au menu précédent
+			return
+		default:
+			fmt.Println(red + "Choix invalide." + reset)
 		}
-	case 2:
-		if player.Gold >= 6 {
-			addInventory(player, "potionPoison", 1)
-			fmt.Println(green + "Vous avez acheté une Potion de poison." + reset)
-			player.Gold -= 6
-		} else {
-			fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
-		}
-	case 3:
-		if player.Gold >= 25 {
-			player.Inventaire.SpellBookCount++
-			fmt.Println(green + "Vous avez acheté un Livre de compétence : Boule de Feu." + reset)
-			player.Gold -= 25
-		} else {
-			fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
-		}
-	case 4:
-		if player.Gold >= 4 {
-			player.Inventaire.Fourrure++
-			fmt.Println(green + "Vous avez acheté une Fourrure de Loup." + reset)
-			player.Gold -= 4
-		} else {
-			fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
-		}
-	case 5:
-		if player.Gold >= 7 {
-			player.Inventaire.Peau_Troll++
-			fmt.Println(green + "Vous avez acheté une Peau de Troll." + reset)
-			player.Gold -= 7
-		} else {
-			fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
-		}
-	case 6:
-		if player.Gold >= 3 {
-			player.Inventaire.CuirSanglier++
-			fmt.Println(green + "Vous avez acheté un Cuir de Sanglier." + reset)
-			player.Gold -= 3
-		} else {
-			fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
-		}
-	case 7:
-		if player.Gold >= 100 {
-			player.Inventaire.Sword++
-			fmt.Println(green + "Vous avez acheté une épée." + reset)
-			player.Gold -= 100
-		} else {
-			fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
-		}
-	case 8:
-		if player.Gold >= 100 {
-			player.Inventaire.Bow++
-			fmt.Println(green + "Vous avez acheté un arc." + reset)
-			player.Gold -= 100
-		} else {
-			fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
-		}
-	case 9:
-		if player.Gold >= 100 {
-			player.Inventaire.MagicStaff++
-			fmt.Println(green + "Vous avez acheté une baguette magique." + reset)
-			player.Gold -= 100
-		} else {
-			fmt.Println(red + "Vous n'avez pas assez de pièces d'or." + reset)
-		}
-	case 0:
-		return
-	default:
-		fmt.Println(red + "Choix invalide." + reset)
 	}
 }
 
@@ -714,17 +719,4 @@ func goblinPattern(goblin Monstre, joueur *Player, tour int) {
 
 	// Affichage des points de vie restants
 	fmt.Printf("%s : %d/%d PV\n", joueur.Pseudo, joueur.Health, joueur.HealthMax)
-}
-
-func entrainementGobelin(goblin Monstre, joueur *Player) {
-	for tour := 1; tour <= 6; tour++ {
-		fmt.Printf("Tour %d :\n", tour)
-		goblinPattern(goblin, joueur, tour)
-
-		// Vérifier si le joueur est toujours en vie
-		if joueur.Health == 0 {
-			fmt.Println("Le joueur a été vaincu !")
-			break
-		}
-	}
 }
