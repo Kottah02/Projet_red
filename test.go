@@ -211,7 +211,7 @@ func createCharacter() Player {
 				player.Class = "Iop"
 				fmt.Println(green + "Vous avez choisi : Iop" + reset)
 				player.HealthMax = 200
-				player.Health = 200
+				player.Health = 100
 				player.Inventaire.Potions = 3
 				player.Level = 1
 				player.Gold = 100
@@ -220,7 +220,7 @@ func createCharacter() Player {
 				player.Class = "Crâ"
 				fmt.Println(green + "Vous avez choisi : Crâ" + reset)
 				player.HealthMax = 100
-				player.Health = 100
+				player.Health = 50
 				player.Inventaire.Potions = 3
 				player.Level = 1
 				player.Gold = 100
@@ -229,7 +229,7 @@ func createCharacter() Player {
 				player.Class = "Osamodas"
 				fmt.Println(green + "Vous avez choisi : Osamodas" + reset)
 				player.HealthMax = 250
-				player.Health = 250
+				player.Health = 125
 				player.Inventaire.Potions = 3
 				player.Level = 1
 				player.Gold = 100
@@ -238,7 +238,7 @@ func createCharacter() Player {
 				player.Class = "Eniripsa"
 				fmt.Println(green + "Vous avez choisi : Eniripsa" + reset)
 				player.HealthMax = 100
-				player.Health = 40
+				player.Health = 50
 				player.Inventaire.Potions = 3
 				player.Level = 1
 				player.Gold = 100
@@ -258,6 +258,25 @@ func createCharacter() Player {
 	player.equip.Plastron = stuff{name: "Plastron de l'aventurier", pvb: 0}
 	player.equip.Feet = stuff{name: "Botte de l'aventurier", pvb: 0}
 	return player
+}
+func totalItems(player *Player) int {
+	// Comptabilise tous les objets dans l'inventaire
+	total := player.Inventaire.Bow +
+		player.Inventaire.MagicStaff +
+		player.Inventaire.Sword +
+		player.Inventaire.Potion_Poison +
+		player.Inventaire.ChapAven +
+		player.Inventaire.TunAven +
+		player.Inventaire.Wood +
+		player.Inventaire.Stone +
+		player.Inventaire.Leaf +
+		player.Inventaire.Fourrure +
+		player.Inventaire.CuirSanglier +
+		player.Inventaire.PlumeCorbeau +
+		player.Inventaire.Peau_Troll +
+		player.Inventaire.Potions +
+		player.Inventaire.SpellBookCount
+	return total
 }
 
 // Fonction pour récolter des ressources
@@ -280,39 +299,77 @@ func gatherResources(player *Player) {
 		fmt.Print("Choix : ")
 		fmt.Scan(&resourceChoice)
 
+		// Calculer le total d'objets dans l'inventaire
+		totalItems := player.Inventaire.Wood + player.Inventaire.Stone + player.Inventaire.Leaf +
+			player.Inventaire.Fourrure + player.Inventaire.Peau_Troll + player.Inventaire.CuirSanglier +
+			player.Inventaire.PlumeCorbeau
+
+		// Si le total dépasse 50, on empêche de récolter plus de ressources
+		if totalItems >= 50 {
+			fmt.Println(red + "Inventaire plein. Vous ne pouvez plus récolter d'autres ressources." + reset)
+			return
+		}
+
 		switch resourceChoice {
 		case 0:
 			// Revenir au menu principal
 			return
 		case 1:
 			wood := rand.Intn(10) + 1
+			if totalItems+wood > 50 {
+				fmt.Println(red + "Pas assez d'espace pour récolter plus de bois." + reset)
+				continue
+			}
 			player.Inventaire.Wood += wood
 			fmt.Printf(green+"Vous avez récolté %d unités de bois. Total de bois : %d\n"+reset, wood, player.Inventaire.Wood)
 		case 2:
 			stone := rand.Intn(10) + 1
+			if totalItems+stone > 50 {
+				fmt.Println(red + "Pas assez d'espace pour récolter plus de pierre." + reset)
+				continue
+			}
 			player.Inventaire.Stone += stone
 			fmt.Printf(green+"Vous avez récolté %d unités de pierre. Total de pierre : %d\n"+reset, stone, player.Inventaire.Stone)
 		case 3:
 			leaf := rand.Intn(10) + 1
+			if totalItems+leaf > 50 {
+				fmt.Println(red + "Pas assez d'espace pour récolter plus de feuilles." + reset)
+				continue
+			}
 			player.Inventaire.Leaf += leaf
 			fmt.Printf(green+"Vous avez récolté %d feuilles. Total de feuilles : %d\n"+reset, leaf, player.Inventaire.Leaf)
 		case 4:
-			Fourrure := rand.Intn(10) + 1
-			player.Inventaire.Fourrure += Fourrure
-			fmt.Printf(green+"Vous avez récolté %d feuilles. Total de Fourrure de Loup : %d\n"+reset, Fourrure, player.Inventaire.Fourrure)
-
+			fourrure := rand.Intn(10) + 1
+			if totalItems+fourrure > 50 {
+				fmt.Println(red + "Pas assez d'espace pour récolter plus de fourrure de loup." + reset)
+				continue
+			}
+			player.Inventaire.Fourrure += fourrure
+			fmt.Printf(green+"Vous avez récolté %d unités de fourrure de loup. Total de fourrure de loup : %d\n"+reset, fourrure, player.Inventaire.Fourrure)
 		case 5:
-			PeauTroll := rand.Intn(10) + 1
-			player.Inventaire.Peau_Troll += PeauTroll
-			fmt.Printf(green+"Vous avez récolté %d feuilles. Total de Peau de Troll : %d\n"+reset, PeauTroll, player.Inventaire.Peau_Troll)
+			peauTroll := rand.Intn(10) + 1
+			if totalItems+peauTroll > 50 {
+				fmt.Println(red + "Pas assez d'espace pour récolter plus de peau de troll." + reset)
+				continue
+			}
+			player.Inventaire.Peau_Troll += peauTroll
+			fmt.Printf(green+"Vous avez récolté %d unités de peau de troll. Total de peau de troll : %d\n"+reset, peauTroll, player.Inventaire.Peau_Troll)
 		case 6:
-			CuirSanglier := rand.Intn(10) + 1
-			player.Inventaire.CuirSanglier += CuirSanglier
-			fmt.Printf(green+"Vous avez récolté %d feuilles. Total de Cuir de Sanglier : %d\n"+reset, CuirSanglier, player.Inventaire.CuirSanglier)
+			cuirSanglier := rand.Intn(10) + 1
+			if totalItems+cuirSanglier > 50 {
+				fmt.Println(red + "Pas assez d'espace pour récolter plus de cuir de sanglier." + reset)
+				continue
+			}
+			player.Inventaire.CuirSanglier += cuirSanglier
+			fmt.Printf(green+"Vous avez récolté %d unités de cuir de sanglier. Total de cuir de sanglier : %d\n"+reset, cuirSanglier, player.Inventaire.CuirSanglier)
 		case 7:
-			Plume_de_Corbeau := rand.Intn(10) + 1
-			player.Inventaire.PlumeCorbeau += Plume_de_Corbeau
-			fmt.Printf(green+"Vous avez récolté %d feuilles. Total de Plume de Corbeau : %d\n"+reset, Plume_de_Corbeau, player.Inventaire.PlumeCorbeau)
+			plumeCorbeau := rand.Intn(10) + 1
+			if totalItems+plumeCorbeau > 50 {
+				fmt.Println(red + "Pas assez d'espace pour récolter plus de plumes de corbeau." + reset)
+				continue
+			}
+			player.Inventaire.PlumeCorbeau += plumeCorbeau
+			fmt.Printf(green+"Vous avez récolté %d unités de plume de corbeau. Total de plume de corbeau : %d\n"+reset, plumeCorbeau, player.Inventaire.PlumeCorbeau)
 		default:
 			fmt.Println(red + "Choix invalide." + reset)
 		}
@@ -375,12 +432,21 @@ func craftItems(player *Player) {
 		fmt.Print("Choix : ")
 		fmt.Scan(&craftChoice)
 
+		// Calculer le total d'objets dans l'inventaire
+		totalItems := player.Inventaire.Wood + player.Inventaire.Stone + player.Inventaire.Leaf +
+			player.Inventaire.Fourrure + player.Inventaire.Peau_Troll + player.Inventaire.CuirSanglier +
+			player.Inventaire.PlumeCorbeau + player.Inventaire.Sword + player.Inventaire.Bow + player.Inventaire.MagicStaff
+
 		switch craftChoice {
 		case 0:
 			// Revenir au menu principal
 			return
 		case 1:
 			if player.Inventaire.Wood >= 5 && player.Inventaire.Stone >= 5 && player.Gold >= 5 {
+				if totalItems+1 > 50 {
+					fmt.Println(red + "Inventaire plein. Vous ne pouvez pas fabriquer d'objets." + reset)
+					continue
+				}
 				player.Gold -= 5
 				player.Inventaire.Wood -= 5
 				player.Inventaire.Stone -= 5
@@ -391,6 +457,10 @@ func craftItems(player *Player) {
 			}
 		case 2:
 			if player.Inventaire.Wood >= 5 && player.Inventaire.Leaf >= 5 && player.Gold >= 5 {
+				if totalItems+1 > 50 {
+					fmt.Println(red + "Inventaire plein. Vous ne pouvez pas fabriquer d'objets." + reset)
+					continue
+				}
 				player.Gold -= 5
 				player.Inventaire.Wood -= 5
 				player.Inventaire.Leaf -= 5
@@ -401,6 +471,10 @@ func craftItems(player *Player) {
 			}
 		case 3:
 			if player.Inventaire.Wood >= 5 && player.Inventaire.Leaf >= 5 && player.Inventaire.Stone >= 5 && player.Gold >= 5 {
+				if totalItems+1 > 50 {
+					fmt.Println(red + "Inventaire plein. Vous ne pouvez pas fabriquer d'objets." + reset)
+					continue
+				}
 				player.Gold -= 5
 				player.Inventaire.Wood -= 5
 				player.Inventaire.Leaf -= 5
@@ -411,7 +485,11 @@ func craftItems(player *Player) {
 				fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
 			}
 		case 4:
-			if player.Gold >= 5 && player.Inventaire.PlumeCorbeau >= 1 && player.Inventaire.CuirSanglier >= 1 {
+			if player.Gold >= 5 && player.Inventaire.PlumeCorbeau >= 3 && player.Inventaire.CuirSanglier >= 5 {
+				if totalItems+1 > 50 {
+					fmt.Println(red + "Inventaire plein. Vous ne pouvez pas fabriquer d'objets." + reset)
+					continue
+				}
 				player.Gold -= 5
 				player.Inventaire.PlumeCorbeau -= 3
 				player.Inventaire.CuirSanglier -= 5
@@ -422,22 +500,30 @@ func craftItems(player *Player) {
 				fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
 			}
 		case 5:
-			if player.Gold >= 5 && player.Inventaire.Fourrure >= 2 && player.Inventaire.Peau_Troll >= 1 {
+			if player.Gold >= 5 && player.Inventaire.Fourrure >= 4 && player.Inventaire.Peau_Troll >= 1 {
+				if totalItems+1 > 50 {
+					fmt.Println(red + "Inventaire plein. Vous ne pouvez pas fabriquer d'objets." + reset)
+					continue
+				}
 				player.Gold -= 5
 				player.Inventaire.Fourrure -= 4
 				player.Inventaire.Peau_Troll -= 1
 				player.equip.Head = stuff{"Cape Bouftou", 15}
-				player.HealthMax += player.equip.Plastron.pvb
+				player.HealthMax += player.equip.Head.pvb
 				fmt.Println(green + "Vous avez fabriqué une Cape Bouftou." + reset)
 			} else {
 				fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
 			}
 		case 6:
-			if player.Gold >= 5 && player.Inventaire.Fourrure >= 1 && player.Inventaire.CuirSanglier >= 1 {
+			if player.Gold >= 5 && player.Inventaire.Fourrure >= 3 && player.Inventaire.CuirSanglier >= 4 {
+				if totalItems+1 > 50 {
+					fmt.Println(red + "Inventaire plein. Vous ne pouvez pas fabriquer d'objets." + reset)
+					continue
+				}
 				player.Gold -= 5
 				player.Inventaire.Fourrure -= 3
 				player.Inventaire.CuirSanglier -= 4
-				player.equip.Feet = stuff{"Boubfbotte", 5}
+				player.equip.Feet = stuff{"Boufbotte", 5}
 				player.HealthMax += player.equip.Feet.pvb
 				fmt.Println(green + "Vous avez fabriqué une paire de Boufbotte." + reset)
 			} else {
@@ -493,12 +579,6 @@ func accessInventory(player *Player) {
 	if player.Inventaire.Sword > 0 {
 		fmt.Printf(green+"- Épée (%d)\n"+reset, player.Inventaire.Sword)
 	}
-	if player.Inventaire.Bow > 0 {
-		fmt.Printf(green+"- Arc (%d)\n"+reset, player.Inventaire.Bow)
-	}
-	if player.Inventaire.MagicStaff > 0 {
-		fmt.Printf(green+"- Bâton magique (%d)\n"+reset, player.Inventaire.MagicStaff)
-	}
 	if player.Inventaire.Potion_Poison > 0 {
 		fmt.Printf(green+"- Potions de Poison (%d)\n"+reset, player.Inventaire.Potion_Poison)
 	}
@@ -508,9 +588,10 @@ func accessInventory(player *Player) {
 	if player.Inventaire.TunAven > 0 {
 		fmt.Printf(green+"- Tunique de l'aventurier (%d)\n"+reset, player.Inventaire.TunAven)
 	}
-	if player.Inventaire.Sword == 0 && player.Inventaire.Bow == 0 && player.Inventaire.MagicStaff == 0 && player.Inventaire.Potion_Poison == 0 && player.Inventaire.ChapAven == 0 && player.Inventaire.TunAven == 0 {
-		fmt.Println(red + "Aucun arme." + reset)
+	if totalItems(player) == 0 {
+		fmt.Println(red + "Aucun objet." + reset)
 	}
+
 	fmt.Println(cyan + "\n[Compétences]" + reset)
 	for _, skill := range player.Skills {
 		fmt.Println(green + "- " + skill + reset)
@@ -522,13 +603,16 @@ func accessInventory(player *Player) {
 	fmt.Printf("- Pierre : %d\n", player.Inventaire.Stone)
 	fmt.Printf("- Feuilles : %d\n", player.Inventaire.Leaf)
 	fmt.Printf("- Fourrure de loup : %d\n", player.Inventaire.Fourrure)
-	fmt.Printf("- Cuire de sanglier : %d\n", player.Inventaire.CuirSanglier)
+	fmt.Printf("- Cuir de sanglier : %d\n", player.Inventaire.CuirSanglier)
 	fmt.Printf("- Plume de corbeau : %d\n", player.Inventaire.PlumeCorbeau)
 	fmt.Printf("- Peau de troll : %d\n", player.Inventaire.Peau_Troll)
 
 	// Consommables
 	fmt.Println(cyan + "\n[Consommables]" + reset)
 	fmt.Printf("- Potions : %d\n", player.Inventaire.Potions)
+
+	// Affichage de la limite d'inventaire
+	fmt.Printf("\n"+cyan+"Capacité d'inventaire : %d/50\n"+reset, totalItems(player))
 
 	fmt.Println("\n" + cyan + "================================================" + reset)
 	fmt.Println("   Que voulez-vous faire ?")
@@ -555,9 +639,7 @@ func accessInventory(player *Player) {
 		return
 	default:
 		fmt.Println(red + "Choix invalide." + reset)
-
 	}
-
 }
 
 // Tâche 7
