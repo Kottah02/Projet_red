@@ -26,12 +26,8 @@ type Player struct {
 	Inventaire Objet
 	Skills     []string
 	Gold       int
-<<<<<<< HEAD
-	Equip      Equipment
-	Attack     int
-=======
 	equip      Equipment
->>>>>>> 46e895dbba3ff89204ff8c1de9bf916d6a499d63
+	Attack     int
 }
 
 type Objet struct {
@@ -63,10 +59,11 @@ type stuff struct {
 	pvb  int
 }
 
-type Equipment struct {
-	Head  string
-	Torso string
-	Feet  string
+type Monstre struct {
+	Name      string
+	HealthMax int
+	Health    int
+	Attack    int
 }
 
 func main() {
@@ -75,6 +72,11 @@ func main() {
 	fmt.Println("La quête des Dofus primordiaux est centrale, influençant le destin du monde et entraînant des combats épiques.")
 	fmt.Println(red + "LE MONDE COMPTE SUR TOI JEUNE AVENTURIER" + reset)
 	fmt.Println("Appuyez sur Entrée pour continuer..." + reset)
+	gobelin := InitGoblin()
+	fmt.Println("Nom:", gobelin.Name)
+	fmt.Println("Points de vie maximum:", gobelin.HealthMax)
+	fmt.Println("Points de vie actuels:", gobelin.Health)
+	fmt.Println("Points d'attaque:", gobelin.Attack)
 	fmt.Scanln()
 
 	Debut()
@@ -680,4 +682,36 @@ func spellBook(player *Player) {
 	}
 	player.Skills = append(player.Skills, "Boule de Feu")
 	fmt.Println(green + "Vous avez appris une nouvelle compétence : Boule de Feu." + reset)
+}
+
+// Tâche 16
+func InitGoblin() Monstre {
+	return Monstre{
+		Name:      "Gobelin d'entraînement",
+		HealthMax: 40,
+		Health:    40,
+		Attack:    5,
+	}
+}
+
+func goblinPattern(goblin Monstre, joueur *Player, tour int) {
+	var degats int
+	if tour%3 == 0 {
+		// Tous les 3 tours, le gobelin inflige 200% de ses dégâts
+		degats = goblin.Attack * 2
+		fmt.Printf("%s inflige à %s %d de dégâts\n", goblin.Name, joueur.Pseudo, degats)
+	} else {
+		// Sinon, le gobelin inflige 100% de ses dégâts
+		degats = goblin.Attack
+		fmt.Printf("%s inflige à %s %d de dégâts\n", goblin.Name, joueur.Pseudo, degats)
+	}
+
+	// Réduire les points de vie du joueur
+	joueur.Health -= degats
+	if joueur.Health < 0 {
+		joueur.Health = 0 // Empêcher les points de vie négatifs
+	}
+
+	// Affichage des points de vie restants
+	fmt.Printf("%s : %d/%d PV\n", joueur.Pseudo, joueur.Health, joueur.HealthMax)
 }
