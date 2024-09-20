@@ -48,9 +48,9 @@ type Objet struct {
 }
 
 type Equipment struct {
-	head     stuff
-	plastron stuff
-	feet     stuff
+	Head     stuff
+	Plastron stuff
+	Feet     stuff
 }
 
 type stuff struct {
@@ -117,7 +117,7 @@ func Debut() {
 }
 
 func DisplayInfo(player Player) {
-	fmt.Printf("Pseudo : %s\nSexe : %s\nClasse : %s\nNiveau : %d\nVie actuelle : %d\nVie Max : %d\nPièce d'or : %d\n", player.Pseudo, player.Sex, player.Class, player.Level, player.Health, player.HealthMax, player.Gold)
+	fmt.Printf("Pseudo : %s\nSexe : %s\nClasse : %s\nNiveau : %d\nVie actuelle : %d\nVie Max : %d\nPièce d'or : %d\n Equipement :\n-Casque : %s\n-Plastron : %s\n-Bottes : %s\n", player.Pseudo, player.Sex, player.Class, player.Level, player.Health, player.HealthMax, player.Gold, player.equip.Head.name, player.equip.Plastron.name, player.equip.Feet.name)
 }
 
 // Fonction pour créer le personnage (pseudo, sexe, classe)
@@ -160,10 +160,10 @@ func createCharacter() Player {
 	fmt.Println(cyan + "\n================================================" + reset)
 	fmt.Println("   Choisissez votre classe :")
 	fmt.Println(cyan + "================================================" + reset)
-	fmt.Println(yellow + "1" + reset + " - Guerrier")
-	fmt.Println(yellow + "2" + reset + " - Archer")
-	fmt.Println(yellow + "3" + reset + " - Mage")
-	fmt.Println(yellow + "4" + reset + " - Elfe")
+	fmt.Println(yellow + "1" + reset + " - Iop")
+	fmt.Println(yellow + "2" + reset + " - Crâ")
+	fmt.Println(yellow + "3" + reset + " - Osamodas")
+	fmt.Println(yellow + "4" + reset + " - Eniripsa")
 	fmt.Println(cyan + "================================================" + reset)
 
 	var classChoice int
@@ -172,16 +172,16 @@ func createCharacter() Player {
 
 	switch classChoice {
 	case 1:
-		player.Class = "Guerrier"
-		fmt.Println(green + "Vous avez choisi : Guerrier" + reset)
+		player.Class = "Iop"
+		fmt.Println(green + "Vous avez choisi : Iop" + reset)
 		player.HealthMax = 200
 		player.Health = 200
 		player.Inventaire.Potions = 3
 		player.Level = 1
 		player.Gold = 100
 	case 2:
-		player.Class = "Archer"
-		fmt.Println(green + "Vous avez choisi : Archer" + reset)
+		player.Class = "Crâ"
+		fmt.Println(green + "Vous avez choisi : Crâ" + reset)
 		player.HealthMax = 100
 		player.Health = 100
 		player.Inventaire.Potions = 3
@@ -189,32 +189,32 @@ func createCharacter() Player {
 		player.Gold = 100
 
 	case 3:
-		player.Class = "Mage"
-		fmt.Println(green + "Vous avez choisi : Mage" + reset)
+		player.Class = "Osamodas"
+		fmt.Println(green + "Vous avez choisi : Osamodas" + reset)
 		player.HealthMax = 250
 		player.Health = 250
 		player.Inventaire.Potions = 3
 		player.Level = 1
 		player.Gold = 100
 	case 4:
-		player.Class = "Elfe"
-		fmt.Println(green + "Vous avez choisi : Elfe" + reset)
+		player.Class = "Eniripsa"
+		fmt.Println(green + "Vous avez choisi : Eniripsa" + reset)
 		player.HealthMax = 100
 		player.Health = 40
 		player.Inventaire.Potions = 3
 		player.Level = 1
 		player.Gold = 100
 	default:
-		fmt.Println(red + "Choix invalide, vous serez un Guerrier par défaut." + reset)
-		player.Class = "Guerrier"
+		fmt.Println(red + "Choix invalide, vous serez un Iop par défaut." + reset)
+		player.Class = "Iop"
 	}
 
 	player.Skills = append(player.Skills, "Coup de poing")
 	fmt.Println(green + "Vous avez appris une nouvelle compétence : Coup de poing" + reset)
 
-	player.equip.head = stuff{name: "Chapeau de l'aventurier", pvb: 0}
-	player.equip.plastron = stuff{name: "Plastron de l'aventurier", pvb: 0}
-	player.equip.feet = stuff{name: "Botte de l'aventurier", pvb: 0}
+	player.equip.Head = stuff{name: "Chapeau de l'aventurier", pvb: 0}
+	player.equip.Plastron = stuff{name: "Plastron de l'aventurier", pvb: 0}
+	player.equip.Feet = stuff{name: "Botte de l'aventurier", pvb: 0}
 	return player
 }
 
@@ -323,9 +323,9 @@ func craftItems(player *Player) {
 		fmt.Println(yellow + "1" + reset + " - Épée (5 bois, 5 pierre)")
 		fmt.Println(yellow + "2" + reset + " - Arc (5 bois, 5 feuilles)")
 		fmt.Println(yellow + "3" + reset + " - Bâton magique (5 bois, 5 feuilles, 5 pierre)")
-		fmt.Println(yellow + "4" + reset + " - Chapeau de l'aventurier")
-		fmt.Println(yellow + "5" + reset + " - Tunique de l'aventurier")
-		fmt.Println(yellow + "6" + reset + " - Bottes de l'aventurier")
+		fmt.Println(yellow + "4" + reset + " - Coiffe Bouftou (5 cuire de sanglier, 3 plume de corbeau)")
+		fmt.Println(yellow + "5" + reset + " - Cape bouftou (4 fourrures de loup, 1 peau de Troll)")
+		fmt.Println(yellow + "6" + reset + " - Boufbotte (3 fourrures de loup, 4 cuir de sanglier)")
 		fmt.Println(yellow + "0" + reset + " - Retour")
 		fmt.Println(cyan + "================================================" + reset)
 
@@ -371,33 +371,33 @@ func craftItems(player *Player) {
 		case 4:
 			if player.Gold >= 5 && player.Inventaire.PlumeCorbeau >= 1 && player.Inventaire.CuirSanglier >= 1 {
 				player.Gold -= 5
-				player.Inventaire.PlumeCorbeau -= 1
-				player.Inventaire.CuirSanglier -= 1
-				player.equip.head = stuff{"Chapeau de kheir", 10}
-				player.HealthMax += player.equip.head.pvb
-				fmt.Println(green + "Vous avez fabriqué un Chapeau de l'aventurier." + reset)
+				player.Inventaire.PlumeCorbeau -= 3
+				player.Inventaire.CuirSanglier -= 5
+				player.equip.Head = stuff{"Coiffe Bouftou", 10}
+				player.HealthMax += player.equip.Head.pvb
+				fmt.Println(green + "Vous avez fabriqué une Coiffe Bouftou." + reset)
 			} else {
 				fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
 			}
 		case 5:
 			if player.Gold >= 5 && player.Inventaire.Fourrure >= 2 && player.Inventaire.Peau_Troll >= 1 {
 				player.Gold -= 5
-				player.Inventaire.Fourrure -= 2
+				player.Inventaire.Fourrure -= 4
 				player.Inventaire.Peau_Troll -= 1
-				player.equip.head = stuff{"Plastron de kheir", 10}
-				player.HealthMax += player.equip.plastron.pvb
-				fmt.Println(green + "Vous avez fabriqué un Tunique de l'aventurier." + reset)
+				player.equip.Head = stuff{"Cape Bouftou", 15}
+				player.HealthMax += player.equip.Plastron.pvb
+				fmt.Println(green + "Vous avez fabriqué une Cape Bouftou." + reset)
 			} else {
 				fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
 			}
 		case 6:
 			if player.Gold >= 5 && player.Inventaire.Fourrure >= 1 && player.Inventaire.CuirSanglier >= 1 {
 				player.Gold -= 5
-				player.Inventaire.Fourrure -= 1
-				player.Inventaire.CuirSanglier -= 1
-				player.equip.head = stuff{"Botte de kheir", 10}
-				player.HealthMax += player.equip.feet.pvb
-				fmt.Println(green + "Vous avez fabriqué une paire de bottes l'aventurier." + reset)
+				player.Inventaire.Fourrure -= 3
+				player.Inventaire.CuirSanglier -= 4
+				player.equip.Feet = stuff{"Boubfbotte", 5}
+				player.HealthMax += player.equip.Feet.pvb
+				fmt.Println(green + "Vous avez fabriqué une paire de Boufbotte." + reset)
 			} else {
 				fmt.Println(red + "Vous n'avez pas assez de ressources." + reset)
 			}
